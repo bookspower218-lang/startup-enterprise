@@ -1,8 +1,10 @@
 import { Link, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Zap } from "lucide-react";
+import { Zap, LayoutDashboard } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
+  const { user } = useAuth();
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between">
@@ -33,12 +35,20 @@ const Navbar = () => {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-            <NavLink to="/company/register">For Companies</NavLink>
-          </Button>
-          <Button asChild variant="hero" size="sm">
-            <NavLink to="/startup/register">Get Started</NavLink>
-          </Button>
+          {user ? (
+            <Button asChild variant="hero" size="sm">
+              <NavLink to="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard</NavLink>
+            </Button>
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+                <NavLink to="/login">Sign in</NavLink>
+              </Button>
+              <Button asChild variant="hero" size="sm">
+                <NavLink to="/startup/register">Get Started</NavLink>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

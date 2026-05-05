@@ -14,16 +14,173 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pitch_responses: {
+        Row: {
+          company_id: string
+          created_at: string
+          decision: Database["public"]["Enums"]["response_decision"]
+          id: string
+          message: string
+          pitch_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          decision: Database["public"]["Enums"]["response_decision"]
+          id?: string
+          message: string
+          pitch_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          decision?: Database["public"]["Enums"]["response_decision"]
+          id?: string
+          message?: string
+          pitch_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pitch_responses_pitch_id_fkey"
+            columns: ["pitch_id"]
+            isOneToOne: false
+            referencedRelation: "pitches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pitches: {
+        Row: {
+          asking_amount: number | null
+          created_at: string
+          description: string
+          expires_at: string
+          id: string
+          industry: string
+          pitch_type: Database["public"]["Enums"]["pitch_type"]
+          startup_id: string
+          status: Database["public"]["Enums"]["pitch_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          asking_amount?: number | null
+          created_at?: string
+          description: string
+          expires_at?: string
+          id?: string
+          industry: string
+          pitch_type: Database["public"]["Enums"]["pitch_type"]
+          startup_id: string
+          status?: Database["public"]["Enums"]["pitch_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          asking_amount?: number | null
+          created_at?: string
+          description?: string
+          expires_at?: string
+          id?: string
+          industry?: string
+          pitch_type?: Database["public"]["Enums"]["pitch_type"]
+          startup_id?: string
+          status?: Database["public"]["Enums"]["pitch_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          account_type: Database["public"]["Enums"]["account_type"]
+          bio: string | null
+          company_name: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          industry: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          plan: Database["public"]["Enums"]["plan_tier"] | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          account_type?: Database["public"]["Enums"]["account_type"]
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          industry?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          plan?: Database["public"]["Enums"]["plan_tier"] | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          account_type?: Database["public"]["Enums"]["account_type"]
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          industry?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          plan?: Database["public"]["Enums"]["plan_tier"] | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      account_type: "startup" | "company"
+      app_role: "admin" | "startup" | "company"
+      payment_status: "pending" | "verified" | "none"
+      pitch_status: "open" | "closed" | "expired"
+      pitch_type: "sell" | "investment" | "networking"
+      plan_tier: "basic" | "pro" | "elite"
+      response_decision: "interested" | "declined"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +307,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      account_type: ["startup", "company"],
+      app_role: ["admin", "startup", "company"],
+      payment_status: ["pending", "verified", "none"],
+      pitch_status: ["open", "closed", "expired"],
+      pitch_type: ["sell", "investment", "networking"],
+      plan_tier: ["basic", "pro", "elite"],
+      response_decision: ["interested", "declined"],
+    },
   },
 } as const

@@ -6,6 +6,16 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ComingSoon from "./pages/ComingSoon.tsx";
+import Login from "./pages/auth/Login.tsx";
+import StartupRegister from "./pages/auth/StartupRegister.tsx";
+import CompanyRegister from "./pages/auth/CompanyRegister.tsx";
+import Dashboard from "./pages/dashboard/Dashboard.tsx";
+import MyPitches from "./pages/dashboard/MyPitches.tsx";
+import NewPitch from "./pages/dashboard/NewPitch.tsx";
+import Browse from "./pages/dashboard/Browse.tsx";
+import Profile from "./pages/dashboard/Profile.tsx";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -15,38 +25,30 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route
-            path="/startup/register"
-            element={
-              <ComingSoon
-                title="Startup Registration — coming next"
-                description="The 3-step startup signup flow with plan selection and payment is being built. Hook up Lovable Cloud to enable accounts and persistence."
-              />
-            }
-          />
-          <Route
-            path="/company/register"
-            element={
-              <ComingSoon
-                title="Company Registration — coming next"
-                description="Free signup for validator companies. We'll wire up auth and the company profile form in the next iteration."
-              />
-            }
-          />
-          <Route
-            path="/terms"
-            element={
-              <ComingSoon
-                title="Terms & Conditions"
-                description="Full terms covering platform usage, payment obligations, refund policy and the 7-day company response SLA — coming next."
-              />
-            }
-          />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/startup/register" element={<StartupRegister />} />
+            <Route path="/company/register" element={<CompanyRegister />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/pitches" element={<ProtectedRoute><MyPitches /></ProtectedRoute>} />
+            <Route path="/pitches/new" element={<ProtectedRoute><NewPitch /></ProtectedRoute>} />
+            <Route path="/browse" element={<ProtectedRoute><Browse /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route
+              path="/terms"
+              element={
+                <ComingSoon
+                  title="Terms & Conditions"
+                  description="Full terms covering platform usage, payment obligations, refund policy and the 7-day company response SLA — coming next."
+                />
+              }
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

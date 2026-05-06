@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardShell from "@/components/site/DashboardShell";
@@ -6,41 +7,46 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Clock, Search, Inbox } from "lucide-react";
+import { Inbox, MessageSquare } from "lucide-react";
 import { INDUSTRIES, PITCH_TYPES } from "@/lib/constants";
 import { toast } from "sonner";
 
 type Pitch = {
-  id: string;
-  title: string;
-  description: string;
-  industry: string;
-  pitch_type: string;
-  asking_amount: number | null;
-  expires_at: string;
+  id: string; problem: string | null; solution: string | null; short_note: string | null;
+  industry: string; pitch_type: string; status: string; created_at: string;
   startup_id: string;
 };
-
-const daysLeft = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000));
+type Profile = { user_id: string; full_name: string | null; company_name: string | null };
 
 const Browse = () => {
   const { user } = useAuth();
   const [pitches, setPitches] = useState<Pitch[]>([]);
-  const [responded, setResponded] = useState<Set<string>>(new Set());
+  const [responded, setResponded] = useState<Record<string, "interested" | "pass">>({});
+  const [profiles, setProfiles] = useState<Record<string, Profile>>({});
   const [loading, setLoading] = useState(true);
   const [industry, setIndustry] = useState<string | null>(null);
   const [type, setType] = useState<string | null>(null);
 
   const load = async () => {
+    if (!user) return;
     setLoading(true);
-    const { data } = await supabase.from("pitches").select("*").eq("status", "open").order("created_at", { ascending: false });
-    setPitches((data as Pitch[]) ?? []);
-    if (user) {
-      const { data: r } = await supabase.from("pitch_responses").select("pitch_id").eq("company_id", user.id);
-      setResponded(new Set((r ?? []).map((x: any) => x.pitch_id)));
+    const { data } = await supabase.from("pitches").select("*").eq("target_company_id", user.id).order("created_at", { ascending: false });
+    const list = (data as Pitch[]) ?? [];
+    setPitches(list);
+
+    const ids = Array.from(new Set(list.map((p) => p.startup_id)));
+    if (ids.length) {
+      const { data: profs } = await supabase.from("profiles").select("user_id,full_name,company_name").in("user_id", ids);
+      const map: Record<string, Profile> = {};
+      (profs as Profile[] ?? []).forEach((p) => (map[p.user_id] = p));
+      setProfiles(map);
     }
+
+    const { data: r } = await supabase.from("pitch_responses").select("pitch_id,decision").eq("company_id", user.id);
+    const m: Record<string, "interested" | "pass"> = {};
+    (r ?? []).forEach((x: any) => (m[x.pitch_id] = x.decision));
+    setResponded(m);
+
     setLoading(false);
   };
 
@@ -50,12 +56,22 @@ const Browse = () => {
     (!industry || p.industry === industry) && (!type || p.pitch_type === type)
   ), [pitches, industry, type]);
 
+  const respond = async (pitchId: string, decision: "interested" | "pass") => {
+    if (!user) return;
+    const { error } = await supabase.from("pitch_responses").insert({
+      pitch_id: pitchId, company_id: user.id, message: decision === "interested" ? "Interested" : "Pass", decision,
+    });
+    if (error) return toast.error(error.message);
+    toast.success(decision === "interested" ? "Interest sent" : "Pitch passed");
+    load();
+  };
+
   return (
     <DashboardShell>
       <div className="container space-y-6 py-8">
         <div>
-          <h1 className="font-display text-3xl font-bold">Browse Pitches</h1>
-          <p className="mt-1 text-muted-foreground">Respond to startups within 7 days.</p>
+          <h1 className="font-display text-3xl font-bold">Incoming Pitches</h1>
+          <p className="mt-1 text-muted-foreground">Review and decide. You have 7 days per pitch.</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -74,18 +90,50 @@ const Browse = () => {
         </div>
 
         {loading ? (
-          <div className="grid gap-4 md:grid-cols-2">{[1,2,3,4].map((i)=> <Skeleton key={i} className="h-40 w-full" />)}</div>
+          <div className="grid gap-4 md:grid-cols-2">{[1,2,3,4].map((i)=> <Skeleton key={i} className="h-44 w-full" />)}</div>
         ) : filtered.length === 0 ? (
           <Card className="flex flex-col items-center justify-center gap-3 p-12 text-center">
             <Inbox className="h-12 w-12 text-muted-foreground" />
-            <h3 className="font-display text-xl font-semibold">No pitches found</h3>
-            <p className="text-sm text-muted-foreground">Try changing your filters.</p>
+            <h3 className="font-display text-xl font-semibold">No pitches yet</h3>
+            <p className="text-sm text-muted-foreground">When startups send you a pitch, it shows up here.</p>
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
-            {filtered.map((p) => (
-              <PitchCard key={p.id} pitch={p} alreadyResponded={responded.has(p.id)} onResponded={load} />
-            ))}
+            {filtered.map((p) => {
+              const startup = profiles[p.startup_id];
+              const dec = responded[p.id];
+              return (
+                <Card key={p.id} className="flex flex-col gap-3 p-5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="outline" className="capitalize">{p.pitch_type}</Badge>
+                    <Badge className="capitalize">{p.industry}</Badge>
+                    {dec && <Badge variant={dec === "interested" ? "default" : "secondary"} className="capitalize">{dec}</Badge>}
+                  </div>
+                  <div className="text-xs text-muted-foreground">From: <span className="font-medium text-foreground">{startup?.full_name || "Founder"}</span></div>
+                  <div>
+                    <div className="text-[10px] uppercase text-muted-foreground">Problem</div>
+                    <p className="text-sm">{p.problem}</p>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase text-muted-foreground">Solution</div>
+                    <p className="text-sm">{p.solution}</p>
+                  </div>
+                  {p.short_note && <p className="text-xs italic text-muted-foreground">"{p.short_note}"</p>}
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    {dec === "interested" ? (
+                      <Button asChild size="sm" variant="hero"><Link to={`/pitches/${p.id}`}><MessageSquare className="mr-2 h-4 w-4" /> Open conversation</Link></Button>
+                    ) : dec === "pass" ? (
+                      <Badge variant="secondary">Closed</Badge>
+                    ) : (
+                      <>
+                        <Button size="sm" onClick={() => respond(p.id, "interested")} className="bg-success text-success-foreground hover:bg-success/90">Show Interest</Button>
+                        <Button size="sm" variant="secondary" onClick={() => respond(p.id, "pass")}>Pass</Button>
+                      </>
+                    )}
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>
@@ -101,58 +149,5 @@ const Chip = ({ active, onClick, children }: { active: boolean; onClick: () => v
     }`}
   >{children}</button>
 );
-
-const PitchCard = ({ pitch, alreadyResponded, onResponded }: { pitch: Pitch; alreadyResponded: boolean; onResponded: () => void }) => {
-  const { user } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [sending, setSending] = useState(false);
-
-  const respond = async (decision: "interested" | "declined") => {
-    if (!user) return;
-    if (message.trim().length < 5) { toast.error("Add a short message"); return; }
-    setSending(true);
-    const { error } = await supabase.from("pitch_responses").insert({
-      pitch_id: pitch.id, company_id: user.id, message: message.trim(), decision,
-    });
-    setSending(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Response sent");
-    setOpen(false);
-    onResponded();
-  };
-
-  return (
-    <Card className="flex flex-col gap-3 p-5">
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="outline" className="capitalize">{pitch.pitch_type}</Badge>
-        <Badge className="capitalize">{pitch.industry}</Badge>
-        <span className="ml-auto flex items-center gap-1 text-xs text-gold"><Clock className="h-3 w-3" /> {daysLeft(pitch.expires_at)}d left</span>
-      </div>
-      <h3 className="font-display text-lg font-semibold">{pitch.title}</h3>
-      <p className="line-clamp-3 text-sm text-muted-foreground">{pitch.description}</p>
-      {pitch.asking_amount ? (
-        <div className="text-sm"><span className="text-muted-foreground">Asking:</span> <span className="font-semibold text-gold">PKR {pitch.asking_amount.toLocaleString()}</span></div>
-      ) : null}
-      <div className="mt-1 flex gap-2">
-        {alreadyResponded ? (
-          <Badge variant="secondary">Responded</Badge>
-        ) : (
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button variant="hero" size="sm"><Search className="mr-2 h-4 w-4" /> Respond</Button></DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>Respond to "{pitch.title}"</DialogTitle></DialogHeader>
-              <Textarea rows={5} placeholder="Your feedback or message..." value={message} onChange={(e) => setMessage(e.target.value)} maxLength={1000} />
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => respond("declined")} disabled={sending}>Decline</Button>
-                <Button variant="hero" onClick={() => respond("interested")} disabled={sending}>{sending ? "Sending..." : "Mark Interested"}</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
-    </Card>
-  );
-};
 
 export default Browse;

@@ -14,6 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          pitch_id: string
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          pitch_id: string
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          pitch_id?: string
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_pitch_id_fkey"
+            columns: ["pitch_id"]
+            isOneToOne: false
+            referencedRelation: "pitches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pitch_responses: {
         Row: {
           company_id: string
@@ -53,40 +121,52 @@ export type Database = {
         Row: {
           asking_amount: number | null
           created_at: string
-          description: string
+          description: string | null
           expires_at: string
           id: string
           industry: string
           pitch_type: Database["public"]["Enums"]["pitch_type"]
+          problem: string | null
+          short_note: string | null
+          solution: string | null
           startup_id: string
           status: Database["public"]["Enums"]["pitch_status"]
-          title: string
+          target_company_id: string | null
+          title: string | null
           updated_at: string
         }
         Insert: {
           asking_amount?: number | null
           created_at?: string
-          description: string
+          description?: string | null
           expires_at?: string
           id?: string
           industry: string
           pitch_type: Database["public"]["Enums"]["pitch_type"]
+          problem?: string | null
+          short_note?: string | null
+          solution?: string | null
           startup_id: string
           status?: Database["public"]["Enums"]["pitch_status"]
-          title: string
+          target_company_id?: string | null
+          title?: string | null
           updated_at?: string
         }
         Update: {
           asking_amount?: number | null
           created_at?: string
-          description?: string
+          description?: string | null
           expires_at?: string
           id?: string
           industry?: string
           pitch_type?: Database["public"]["Enums"]["pitch_type"]
+          problem?: string | null
+          short_note?: string | null
+          solution?: string | null
           startup_id?: string
           status?: Database["public"]["Enums"]["pitch_status"]
-          title?: string
+          target_company_id?: string | null
+          title?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -172,6 +252,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      monthly_pitch_count: { Args: { _uid: string }; Returns: number }
+      plan_pitch_limit: { Args: { _uid: string }; Returns: number }
     }
     Enums: {
       account_type: "startup" | "company"
@@ -180,7 +262,7 @@ export type Database = {
       pitch_status: "open" | "closed" | "expired"
       pitch_type: "sell" | "investment" | "networking"
       plan_tier: "basic" | "pro" | "elite"
-      response_decision: "interested" | "declined"
+      response_decision: "interested" | "declined" | "pass"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -314,7 +396,7 @@ export const Constants = {
       pitch_status: ["open", "closed", "expired"],
       pitch_type: ["sell", "investment", "networking"],
       plan_tier: ["basic", "pro", "elite"],
-      response_decision: ["interested", "declined"],
+      response_decision: ["interested", "declined", "pass"],
     },
   },
 } as const

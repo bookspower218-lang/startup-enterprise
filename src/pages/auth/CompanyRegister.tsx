@@ -117,8 +117,6 @@ const CompanyRegister = () => {
             <Button type="submit" variant="gold" className="w-full" disabled={loading}>
               {loading ? "Creating..." : "Create Account"}
             </Button>
-              {loading ? "Creating..." : "Create Account"}
-            </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">

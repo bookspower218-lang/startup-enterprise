@@ -69,9 +69,9 @@ const plans = [
 ];
 
 const faqs = [
-  { q: "How does PitchBridge actually work?", a: "Startups register, build a profile and pitch deck, and send pitches to verified companies in their industry. Companies review and either show interest or pass. When both sides engage, contact is unlocked through the platform." },
+  { q: "How does Startup Enterprise actually work?", a: "Startups register, build a profile and pitch deck, and send pitches to verified companies in their industry. Companies review and either show interest or pass. When both sides engage, contact is unlocked through the platform." },
   { q: "Why do startups have to pay?", a: "Companies receive curated, paid pitches only — this filters serious founders from spam and guarantees a 7-day response SLA from validator companies." },
-  { q: "Can I contact a company outside the platform?", a: "No. All communication must happen through PitchBridge. Going around the platform is a breach of contract and can result in account termination." },
+  { q: "Can I contact a company outside the platform?", a: "No. All communication must happen through Startup Enterprise. Going around the platform is a breach of contract and can result in account termination." },
   { q: "What happens if a company doesn't respond?", a: "Validator companies commit to a 7-day response SLA. If they fail to respond, you can flag the pitch and request a re-route to another company at no extra cost." },
   { q: "Is the registration fee refundable?", a: "The PKR 5,000 registration fee is non-refundable. The PKR 15,000 unlock fee is only charged when a company shows interest in your pitch." },
 ];
@@ -103,7 +103,7 @@ const Landing = () => {
               </span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
-              PitchBridge connects ambitious founders directly with verified B2B validator companies — get real feedback, real interest, and real contracts.
+              Startup Enterprise connects ambitious founders directly with verified B2B validator companies — get real feedback, real interest, and real contracts.
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -135,7 +135,7 @@ const Landing = () => {
       {/* How it works */}
       <section id="how" className="container py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-display text-3xl font-bold md:text-5xl">How PitchBridge works</h2>
+          <h2 className="font-display text-3xl font-bold md:text-5xl">How Startup Enterprise works</h2>
           <p className="mt-4 text-muted-foreground">From signup to validation in four straightforward steps.</p>
         </div>
 

@@ -50,7 +50,7 @@ const StartupRegister = () => {
       toast.error(error.message);
       return;
     }
-    toast.success("Account created! Welcome to PitchBridge.");
+    toast.success("Account created! Welcome to Startup Enterprise.");
     navigate("/dashboard");
   };
 

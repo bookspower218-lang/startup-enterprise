@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Zap, LayoutDashboard, FileText, Search, LogOut, User } from "lucide-react";
 import { toast } from "sonner";
+import NotificationBell from "./NotificationBell";
 
 const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const { profile, signOut } = useAuth();
@@ -32,14 +33,17 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
     <div className="flex min-h-screen flex-col bg-background md:flex-row">
       {/* Sidebar (desktop) */}
       <aside className="hidden w-64 shrink-0 border-r border-border/40 bg-card/30 md:flex md:flex-col">
-        <Link to="/" className="flex items-center gap-2 border-b border-border/40 px-6 py-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-primary">
-            <Zap className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="font-display text-xl font-bold">
-            Pitch<span className="text-gold">Bridge</span>
-          </span>
-        </Link>
+        <div className="flex items-center justify-between border-b border-border/40 px-4 py-4">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-primary">
+              <Zap className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="font-display text-base font-bold">
+              Startup <span className="text-gold">Enterprise</span>
+            </span>
+          </Link>
+          <NotificationBell />
+        </div>
         <nav className="flex-1 space-y-1 p-4">
           {navItems.map((item) => (
             <NavLink
@@ -74,9 +78,12 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
             <Zap className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="font-display text-lg font-bold">Pitch<span className="text-gold">Bridge</span></span>
+          <span className="font-display text-lg font-bold">Startup <span className="text-gold">Enterprise</span></span>
         </Link>
-        <Button variant="ghost" size="sm" onClick={handleSignOut}><LogOut className="h-4 w-4" /></Button>
+        <div className="flex items-center gap-1">
+          <NotificationBell />
+          <Button variant="ghost" size="sm" onClick={handleSignOut}><LogOut className="h-4 w-4" /></Button>
+        </div>
       </header>
 
       <main className="flex-1 pb-20 md:pb-0">{children}</main>

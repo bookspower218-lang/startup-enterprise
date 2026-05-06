@@ -58,7 +58,7 @@ const Login = () => {
       <main className="container flex flex-1 items-center justify-center py-12">
         <Card className="w-full max-w-md p-8">
           <h1 className="font-display text-3xl font-bold">Welcome back</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Log in to your PitchBridge account.</p>
+          <p className="mt-2 text-sm text-muted-foreground">Log in to your Startup Enterprise account.</p>
 
           <Button onClick={handleGoogle} variant="outline" className="mt-6 w-full">
             Continue with Google

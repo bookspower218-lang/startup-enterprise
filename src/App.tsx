@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ComingSoon from "./pages/ComingSoon.tsx";
+import Terms from "./pages/Terms.tsx";
 import Login from "./pages/auth/Login.tsx";
 import StartupRegister from "./pages/auth/StartupRegister.tsx";
 import CompanyRegister from "./pages/auth/CompanyRegister.tsx";
@@ -14,6 +15,7 @@ import MyPitches from "./pages/dashboard/MyPitches.tsx";
 import NewPitch from "./pages/dashboard/NewPitch.tsx";
 import Browse from "./pages/dashboard/Browse.tsx";
 import Profile from "./pages/dashboard/Profile.tsx";
+import PitchThread from "./pages/dashboard/PitchThread.tsx";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -34,17 +36,10 @@ const App = () => (
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/pitches" element={<ProtectedRoute><MyPitches /></ProtectedRoute>} />
             <Route path="/pitches/new" element={<ProtectedRoute><NewPitch /></ProtectedRoute>} />
+            <Route path="/pitches/:id" element={<ProtectedRoute><PitchThread /></ProtectedRoute>} />
             <Route path="/browse" element={<ProtectedRoute><Browse /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route
-              path="/terms"
-              element={
-                <ComingSoon
-                  title="Terms & Conditions"
-                  description="Full terms covering platform usage, payment obligations, refund policy and the 7-day company response SLA — coming next."
-                />
-              }
-            />
+            <Route path="/terms" element={<Terms />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

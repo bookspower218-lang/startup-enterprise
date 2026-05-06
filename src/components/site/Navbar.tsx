@@ -2,6 +2,7 @@ import { Link, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Zap, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import NotificationBell from "./NotificationBell";
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -13,7 +14,7 @@ const Navbar = () => {
             <Zap className="h-5 w-5 text-primary-foreground" />
           </div>
           <span className="font-display text-xl font-bold tracking-tight">
-            Pitch<span className="text-gold">Bridge</span>
+            Startup <span className="text-gold">Enterprise</span>
           </span>
         </Link>
 
@@ -36,9 +37,12 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           {user ? (
-            <Button asChild variant="hero" size="sm">
-              <NavLink to="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard</NavLink>
-            </Button>
+            <>
+              <NotificationBell />
+              <Button asChild variant="hero" size="sm">
+                <NavLink to="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard</NavLink>
+              </Button>
+            </>
           ) : (
             <>
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">

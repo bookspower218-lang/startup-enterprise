@@ -12,7 +12,7 @@ const Footer = () => {
                 <Zap className="h-5 w-5 text-primary-foreground" />
               </div>
               <span className="font-display text-xl font-bold">
-                Pitch<span className="text-gold">Bridge</span>
+                Startup <span className="text-gold">Enterprise</span>
               </span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
@@ -42,14 +42,14 @@ const Footer = () => {
           <div>
             <h4 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider">Contact</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@pitchbridge.pk</li>
+              <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@startup-enterprise.pk</li>
               <li className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Karachi, Pakistan</li>
             </ul>
           </div>
         </div>
 
         <div className="mt-12 border-t border-border/40 pt-6 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} PitchBridge. All rights reserved.
+          © {new Date().getFullYear()} Startup Enterprise. All rights reserved.
         </div>
       </div>
     </footer>

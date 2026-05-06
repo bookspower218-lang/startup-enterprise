@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -23,10 +24,15 @@ const schema = z.object({
 const StartupRegister = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ full_name: "", email: "", password: "", industry: "" });
+  const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreed) {
+      toast.error("You must agree to the Terms & Conditions");
+      return;
+    }
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
@@ -98,6 +104,10 @@ const StartupRegister = () => {
                 </SelectContent>
               </Select>
             </div>
+            <label className="flex items-start gap-2 text-xs text-muted-foreground">
+              <Checkbox checked={agreed} onCheckedChange={(v) => setAgreed(!!v)} className="mt-0.5" />
+              <span>I have read and agree to the <Link to="/terms" target="_blank" className="text-primary underline">Terms & Conditions</Link>, including the prohibition on platform bypass and the non-refundable PKR 5,000 registration fee.</span>
+            </label>
             <Button type="submit" variant="hero" className="w-full" disabled={loading}>
               {loading ? "Creating..." : "Create Account"}
             </Button>

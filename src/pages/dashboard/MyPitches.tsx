@@ -7,33 +7,45 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, Clock, FileText } from "lucide-react";
+import { Plus, FileText, MessageSquare, Lock } from "lucide-react";
 
 type Pitch = {
-  id: string;
-  title: string;
-  description: string;
-  industry: string;
-  pitch_type: string;
-  status: string;
-  expires_at: string;
-  created_at: string;
+  id: string; problem: string | null; solution: string | null;
+  industry: string; pitch_type: string; status: string; created_at: string;
+  target_company_id: string | null;
 };
-
-const daysLeft = (iso: string) => {
-  const ms = new Date(iso).getTime() - Date.now();
-  return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
-};
+type Profile = { user_id: string; full_name: string | null; company_name: string | null };
 
 const MyPitches = () => {
   const { user } = useAuth();
   const [pitches, setPitches] = useState<Pitch[]>([]);
+  const [companies, setCompanies] = useState<Record<string, Profile>>({});
+  const [responses, setResponses] = useState<Record<string, "interested" | "pass">>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("pitches").select("*").eq("startup_id", user.id).order("created_at", { ascending: false })
-      .then(({ data }) => { setPitches((data as Pitch[]) ?? []); setLoading(false); });
+    (async () => {
+      const { data } = await supabase.from("pitches").select("*").eq("startup_id", user.id).order("created_at", { ascending: false });
+      const list = (data as Pitch[]) ?? [];
+      setPitches(list);
+
+      const ids = Array.from(new Set(list.map((p) => p.target_company_id).filter(Boolean) as string[]));
+      if (ids.length) {
+        const { data: profs } = await supabase.from("profiles").select("user_id,full_name,company_name").in("user_id", ids);
+        const map: Record<string, Profile> = {};
+        (profs as Profile[] ?? []).forEach((p) => (map[p.user_id] = p));
+        setCompanies(map);
+      }
+
+      if (list.length) {
+        const { data: r } = await supabase.from("pitch_responses").select("pitch_id,decision").in("pitch_id", list.map((p) => p.id));
+        const m: Record<string, "interested" | "pass"> = {};
+        (r ?? []).forEach((x: any) => (m[x.pitch_id] = x.decision));
+        setResponses(m);
+      }
+      setLoading(false);
+    })();
   }, [user]);
 
   return (
@@ -50,29 +62,42 @@ const MyPitches = () => {
           <Card className="flex flex-col items-center justify-center gap-3 p-12 text-center">
             <FileText className="h-12 w-12 text-muted-foreground" />
             <h3 className="font-display text-xl font-semibold">No pitches yet</h3>
-            <p className="text-sm text-muted-foreground">Create your first pitch to start getting validation.</p>
+            <p className="text-sm text-muted-foreground">Send your first pitch to start getting validation.</p>
             <Button asChild variant="hero"><Link to="/pitches/new">Create your first pitch</Link></Button>
           </Card>
         ) : (
           <div className="grid gap-4">
-            {pitches.map((p) => (
-              <Card key={p.id} className="p-5">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-display text-lg font-semibold">{p.title}</h3>
-                      <Badge variant="outline" className="capitalize">{p.pitch_type}</Badge>
-                      <Badge className="capitalize">{p.industry}</Badge>
-                      <Badge variant={p.status === "open" ? "default" : "secondary"} className="capitalize">{p.status}</Badge>
+            {pitches.map((p) => {
+              const company = p.target_company_id ? companies[p.target_company_id] : null;
+              const dec = responses[p.id];
+              return (
+                <Card key={p.id} className="p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="outline" className="capitalize">{p.pitch_type}</Badge>
+                        <Badge className="capitalize">{p.industry}</Badge>
+                        <Badge variant={p.status === "open" ? "default" : "secondary"} className="capitalize">{p.status}</Badge>
+                        {dec && <Badge variant={dec === "interested" ? "default" : "secondary"} className="capitalize">Company: {dec}</Badge>}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Sent to: <span className="font-medium text-foreground">{company?.company_name || company?.full_name || "—"}</span>
+                      </div>
+                      <p className="line-clamp-2 text-sm text-muted-foreground">{p.problem}</p>
                     </div>
-                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{p.description}</p>
+                    <div>
+                      {dec === "interested" ? (
+                        <Button asChild size="sm" variant="hero"><Link to={`/pitches/${p.id}`}><MessageSquare className="mr-2 h-4 w-4" /> Open chat</Link></Button>
+                      ) : dec === "pass" ? (
+                        <Button asChild size="sm" variant="ghost"><Link to={`/pitches/${p.id}`}>View</Link></Button>
+                      ) : (
+                        <Button asChild size="sm" variant="outline"><Link to={`/pitches/${p.id}`}><Lock className="mr-2 h-4 w-4" /> Awaiting</Link></Button>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5 whitespace-nowrap text-sm text-gold">
-                    <Clock className="h-4 w-4" /> {daysLeft(p.expires_at)}d left
-                  </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>

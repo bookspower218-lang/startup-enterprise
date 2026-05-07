@@ -8,17 +8,22 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Lock, Send, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Lock, Send, ShieldAlert, Mail, Globe, Timer } from "lucide-react";
 import { toast } from "sonner";
 import { detectForbidden, STAGE_BLOCK_MESSAGE } from "@/lib/contentFilter";
+import PaymentPanel from "@/components/pitch/PaymentPanel";
+import AttachmentsPanel from "@/components/pitch/AttachmentsPanel";
+import MeetingsPanel from "@/components/pitch/MeetingsPanel";
+import RatingPanel from "@/components/pitch/RatingPanel";
 
 type Pitch = {
   id: string; startup_id: string; target_company_id: string | null;
   problem: string | null; solution: string | null; short_note: string | null;
-  pitch_type: string; industry: string; status: string; created_at: string;
+  pitch_type: string; industry: string; status: string; created_at: string; expires_at: string;
+  stage_3_unlocked: boolean; stage_4_unlocked: boolean;
 };
 type Msg = { id: string; pitch_id: string; sender_id: string; body: string; created_at: string; read_at: string | null };
-type Profile = { user_id: string; full_name: string | null; company_name: string | null; account_type: string };
+type Profile = { user_id: string; full_name: string | null; company_name: string | null; account_type: string; email?: string | null; website?: string | null };
 
 const MAX_PER_SIDE = 10;
 const MAX_LEN = 500;
@@ -50,7 +55,7 @@ const PitchThread = () => {
 
       const ids = Array.from(new Set([(p as Pitch).startup_id, (p as Pitch).target_company_id].filter(Boolean) as string[]));
       if (ids.length) {
-        const { data: profs } = await supabase.from("profiles").select("user_id,full_name,company_name,account_type").in("user_id", ids);
+        const { data: profs } = await supabase.from("profiles").select("user_id,full_name,company_name,account_type,email,website").in("user_id", ids);
         const map: Record<string, Profile> = {};
         (profs as Profile[] ?? []).forEach((p) => (map[p.user_id] = p));
         setProfiles(map);
@@ -96,6 +101,18 @@ const PitchThread = () => {
   const myCount = messages.filter((m) => m.sender_id === user.id).length;
   const otherCount = messages.filter((m) => m.sender_id === otherId).length;
   const canMessage = interested && pitch.status !== "closed";
+  const stage4 = pitch.stage_4_unlocked;
+  const stage3Full = pitch.stage_3_unlocked;
+
+  // SLA: 7-day window from creation
+  const created = new Date(pitch.created_at).getTime();
+  const daysSince = Math.floor((Date.now() - created) / 86400000);
+  const daysLeft = Math.max(0, 7 - daysSince);
+  const slaBadge = !interested && pitch.status !== "closed"
+    ? daysLeft > 0
+      ? <Badge variant="outline" className="ml-auto"><Timer className="mr-1 h-3 w-3" />{daysLeft}d to respond</Badge>
+      : <Badge variant="destructive" className="ml-auto">SLA missed</Badge>
+    : null;
 
   const respond = async (decision: "interested" | "pass") => {
     if (!user) return;
@@ -109,9 +126,11 @@ const PitchThread = () => {
 
   const send = async () => {
     if (!user || !draft.trim()) return;
-    if (myCount >= MAX_PER_SIDE) return toast.error(`You've reached ${MAX_PER_SIDE} messages at this stage.`);
-    const detect = detectForbidden(draft);
-    if (detect) return toast.error(STAGE_BLOCK_MESSAGE);
+    if (!stage4 && myCount >= MAX_PER_SIDE) return toast.error(`You've reached ${MAX_PER_SIDE} messages at this stage.`);
+    if (!stage4) {
+      const detect = detectForbidden(draft);
+      if (detect) return toast.error(STAGE_BLOCK_MESSAGE);
+    }
     setSending(true);
     const { error } = await supabase.from("messages").insert({ pitch_id: pitch.id, sender_id: user.id, body: draft.trim() });
     setSending(false);
@@ -157,6 +176,7 @@ const PitchThread = () => {
           ) : !interested && !isStartup ? (
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-sm font-medium">Stage 2 · Decide on this pitch</span>
+            {slaBadge}
               <div className="ml-auto flex gap-2">
                 <Button size="sm" onClick={() => respond("interested")} className="bg-success text-success-foreground hover:bg-success/90">Show Interest</Button>
                 <Button size="sm" variant="secondary" onClick={() => respond("pass")}>Pass</Button>
@@ -164,15 +184,53 @@ const PitchThread = () => {
             </div>
           ) : !interested ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Lock className="h-4 w-4" /> Stage 1 · Awaiting company response.
+            <Lock className="h-4 w-4" /> Stage 1 · Awaiting company response.
+            {slaBadge}
             </div>
           ) : (
             <div className="flex flex-wrap items-center gap-2 text-sm">
-              <span className="font-medium">Stage 3 · Conversation unlocked</span>
-              <Badge variant="outline" className="ml-auto">{myCount} of {MAX_PER_SIDE} messages used</Badge>
+            <span className="font-medium">{stage4 ? "Stage 4 · Full access unlocked" : "Stage 3 · Conversation unlocked"}</span>
+            {!stage4 && <Badge variant="outline" className="ml-auto">{myCount} of {MAX_PER_SIDE} messages used</Badge>}
             </div>
           )}
         </Card>
+
+      {/* Payment gates */}
+      {interested && !stage4 && (
+        <PaymentPanel pitchId={pitch.id} tier="stage_4" label="Unlock Stage 4 (contacts, files, meetings)" onChanged={load} />
+      )}
+
+      {/* Stage 4 Contact card + tools */}
+      {stage4 && otherProfile && (
+        <>
+          <Card className="p-4 space-y-2">
+            <div className="text-sm font-semibold">Contact</div>
+            <div className="text-sm">
+              <div className="font-medium">{otherProfile.company_name || otherProfile.full_name}</div>
+              {otherProfile.email && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Mail className="h-3 w-3" />
+                  <a href={`mailto:${otherProfile.email}`} className="hover:underline">{otherProfile.email}</a>
+                  <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText(otherProfile.email!); toast.success("Copied"); }}>Copy</Button>
+                </div>
+              )}
+              {otherProfile.website && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Globe className="h-3 w-3" />
+                  <a href={otherProfile.website} target="_blank" rel="noreferrer" className="hover:underline">{otherProfile.website}</a>
+                </div>
+              )}
+            </div>
+          </Card>
+          <div className="grid gap-3 md:grid-cols-2">
+            <AttachmentsPanel pitchId={pitch.id} />
+            <MeetingsPanel pitchId={pitch.id} />
+          </div>
+          {otherId && messages.length >= 3 && (
+            <RatingPanel pitchId={pitch.id} otherUserId={otherId} />
+          )}
+        </>
+      )}
 
         {/* Thread */}
         {interested && (
@@ -202,7 +260,7 @@ const PitchThread = () => {
               <div className="border-t border-border/40 p-3">
                 <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
                   <ShieldAlert className="h-3 w-3" />
-                  Sharing emails, phone numbers or external links is blocked at this stage.
+                  {stage4 ? "Stage 4: full contact sharing allowed." : "Sharing emails, phone numbers or external links is blocked at this stage."}
                 </div>
                 <div className="flex gap-2">
                   <Textarea
@@ -210,14 +268,14 @@ const PitchThread = () => {
                     maxLength={MAX_LEN}
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
-                    placeholder={myCount >= MAX_PER_SIDE ? "Stage limit reached" : "Type a message..."}
-                    disabled={myCount >= MAX_PER_SIDE}
+                    placeholder={!stage4 && myCount >= MAX_PER_SIDE ? "Stage limit reached — unlock Stage 4 to continue" : "Type a message..."}
+                    disabled={!stage4 && myCount >= MAX_PER_SIDE}
                   />
-                  <Button onClick={send} disabled={sending || !draft.trim() || myCount >= MAX_PER_SIDE} variant="hero">
+                  <Button onClick={send} disabled={sending || !draft.trim() || (!stage4 && myCount >= MAX_PER_SIDE)} variant="hero">
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="mt-1 text-right text-[10px] text-muted-foreground">{draft.length}/{MAX_LEN} · {myCount}/{MAX_PER_SIDE} sent · other side: {otherCount}/{MAX_PER_SIDE}</div>
+                <div className="mt-1 text-right text-[10px] text-muted-foreground">{draft.length}/{MAX_LEN} · {stage4 ? `${myCount} sent` : `${myCount}/${MAX_PER_SIDE} sent · other side: ${otherCount}/${MAX_PER_SIDE}`}</div>
               </div>
             )}
           </Card>

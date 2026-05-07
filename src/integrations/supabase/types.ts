@@ -82,6 +82,138 @@ export type Database = {
         }
         Relationships: []
       }
+      pitch_attachments: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          mime_type: string | null
+          pitch_id: string
+          size_bytes: number | null
+          uploader_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_path: string
+          id?: string
+          mime_type?: string | null
+          pitch_id: string
+          size_bytes?: number | null
+          uploader_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          mime_type?: string | null
+          pitch_id?: string
+          size_bytes?: number | null
+          uploader_id?: string
+        }
+        Relationships: []
+      }
+      pitch_meetings: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          pitch_id: string
+          proposer_id: string
+          scheduled_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          pitch_id: string
+          proposer_id: string
+          scheduled_at: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          pitch_id?: string
+          proposer_id?: string
+          scheduled_at?: string
+        }
+        Relationships: []
+      }
+      pitch_payments: {
+        Row: {
+          amount: number
+          id: string
+          payer_id: string
+          pitch_id: string
+          reference_note: string | null
+          status: Database["public"]["Enums"]["pay_status"]
+          submitted_at: string
+          tier: Database["public"]["Enums"]["payment_tier"]
+          verified_at: string | null
+        }
+        Insert: {
+          amount: number
+          id?: string
+          payer_id: string
+          pitch_id: string
+          reference_note?: string | null
+          status?: Database["public"]["Enums"]["pay_status"]
+          submitted_at?: string
+          tier: Database["public"]["Enums"]["payment_tier"]
+          verified_at?: string | null
+        }
+        Update: {
+          amount?: number
+          id?: string
+          payer_id?: string
+          pitch_id?: string
+          reference_note?: string | null
+          status?: Database["public"]["Enums"]["pay_status"]
+          submitted_at?: string
+          tier?: Database["public"]["Enums"]["payment_tier"]
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
+      pitch_ratings: {
+        Row: {
+          comment: string | null
+          communication: number
+          created_at: string
+          follow_through: number
+          id: string
+          pitch_id: string
+          professionalism: number
+          ratee_id: string
+          rater_id: string
+        }
+        Insert: {
+          comment?: string | null
+          communication: number
+          created_at?: string
+          follow_through: number
+          id?: string
+          pitch_id: string
+          professionalism: number
+          ratee_id: string
+          rater_id: string
+        }
+        Update: {
+          comment?: string | null
+          communication?: number
+          created_at?: string
+          follow_through?: number
+          id?: string
+          pitch_id?: string
+          professionalism?: number
+          ratee_id?: string
+          rater_id?: string
+        }
+        Relationships: []
+      }
       pitch_responses: {
         Row: {
           company_id: string
@@ -129,6 +261,8 @@ export type Database = {
           problem: string | null
           short_note: string | null
           solution: string | null
+          stage_3_unlocked: boolean
+          stage_4_unlocked: boolean
           startup_id: string
           status: Database["public"]["Enums"]["pitch_status"]
           target_company_id: string | null
@@ -146,6 +280,8 @@ export type Database = {
           problem?: string | null
           short_note?: string | null
           solution?: string | null
+          stage_3_unlocked?: boolean
+          stage_4_unlocked?: boolean
           startup_id: string
           status?: Database["public"]["Enums"]["pitch_status"]
           target_company_id?: string | null
@@ -163,6 +299,8 @@ export type Database = {
           problem?: string | null
           short_note?: string | null
           solution?: string | null
+          stage_3_unlocked?: boolean
+          stage_4_unlocked?: boolean
           startup_id?: string
           status?: Database["public"]["Enums"]["pitch_status"]
           target_company_id?: string | null
@@ -254,11 +392,16 @@ export type Database = {
       }
       monthly_pitch_count: { Args: { _uid: string }; Returns: number }
       plan_pitch_limit: { Args: { _uid: string }; Returns: number }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
+      user_avg_rating: { Args: { _uid: string }; Returns: number }
     }
     Enums: {
       account_type: "startup" | "company"
       app_role: "admin" | "startup" | "company"
+      pay_status: "pending" | "verified" | "rejected"
       payment_status: "pending" | "verified" | "none"
+      payment_tier: "stage_3" | "stage_4"
       pitch_status: "open" | "closed" | "expired"
       pitch_type: "sell" | "investment" | "networking"
       plan_tier: "basic" | "pro" | "elite"
@@ -392,7 +535,9 @@ export const Constants = {
     Enums: {
       account_type: ["startup", "company"],
       app_role: ["admin", "startup", "company"],
+      pay_status: ["pending", "verified", "rejected"],
       payment_status: ["pending", "verified", "none"],
+      payment_tier: ["stage_3", "stage_4"],
       pitch_status: ["open", "closed", "expired"],
       pitch_type: ["sell", "investment", "networking"],
       plan_tier: ["basic", "pro", "elite"],

@@ -12,3 +12,8 @@ export function detectForbidden(text: string): string | null {
 
 export const STAGE_BLOCK_MESSAGE =
   "Direct contact sharing is not allowed at this stage. Complete payment to unlock full contact details.";
+
+export const PAYMENT_AMOUNTS = {
+  stage_3: 15000, // PKR — full Stage 3 messaging unlock (lifts caps + filters)
+  stage_4: 20000, // PKR — Stage 4 (contacts, files, meetings)
+};

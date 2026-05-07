@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Lock, Send, ShieldAlert, Mail, Phone, Globe, Timer } from "lucide-react";
+import { ArrowLeft, Lock, Send, ShieldAlert, Mail, Globe, Timer } from "lucide-react";
 import { toast } from "sonner";
 import { detectForbidden, STAGE_BLOCK_MESSAGE } from "@/lib/contentFilter";
 import PaymentPanel from "@/components/pitch/PaymentPanel";

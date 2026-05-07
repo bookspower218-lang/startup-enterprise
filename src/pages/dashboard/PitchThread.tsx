@@ -126,9 +126,11 @@ const PitchThread = () => {
 
   const send = async () => {
     if (!user || !draft.trim()) return;
-    if (myCount >= MAX_PER_SIDE) return toast.error(`You've reached ${MAX_PER_SIDE} messages at this stage.`);
-    const detect = detectForbidden(draft);
-    if (detect) return toast.error(STAGE_BLOCK_MESSAGE);
+    if (!stage4 && myCount >= MAX_PER_SIDE) return toast.error(`You've reached ${MAX_PER_SIDE} messages at this stage.`);
+    if (!stage4) {
+      const detect = detectForbidden(draft);
+      if (detect) return toast.error(STAGE_BLOCK_MESSAGE);
+    }
     setSending(true);
     const { error } = await supabase.from("messages").insert({ pitch_id: pitch.id, sender_id: user.id, body: draft.trim() });
     setSending(false);

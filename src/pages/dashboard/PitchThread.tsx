@@ -73,6 +73,16 @@ const PitchThread = () => {
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages.length]);
 
+  // Mark as read (must be before any early return to keep hook order stable)
+  useEffect(() => {
+    if (!user) return;
+    const unread = messages.filter((m) => m.sender_id !== user.id && !m.read_at).map((m) => m.id);
+    if (unread.length) {
+      supabase.from("messages").update({ read_at: new Date().toISOString() }).in("id", unread).then(() => {});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages.length]);
+
   if (loading) {
     return <DashboardShell><div className="container py-8"><Skeleton className="h-96 w-full" /></div></DashboardShell>;
   }
@@ -108,16 +118,6 @@ const PitchThread = () => {
     if (error) return toast.error(error.message);
     setDraft("");
   };
-
-  // Mark as read
-  useEffect(() => {
-    if (!user) return;
-    const unread = messages.filter((m) => m.sender_id !== user.id && !m.read_at).map((m) => m.id);
-    if (unread.length) {
-      supabase.from("messages").update({ read_at: new Date().toISOString() }).in("id", unread).then(() => {});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages.length]);
 
   return (
     <DashboardShell>

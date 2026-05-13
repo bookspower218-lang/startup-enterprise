@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           body: string
@@ -49,6 +79,36 @@ export type Database = {
           },
         ]
       }
+      moderated_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          pitch_id: string
+          reason: string
+          sender_id: string
+          status: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          pitch_id: string
+          reason: string
+          sender_id: string
+          status?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          pitch_id?: string
+          reason?: string
+          sender_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
@@ -78,6 +138,33 @@ export type Database = {
           read_at?: string | null
           title?: string
           type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      onboarding_state: {
+        Row: {
+          browsed: boolean
+          dismissed: boolean
+          pitched: boolean
+          profile_done: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          browsed?: boolean
+          dismissed?: boolean
+          pitched?: boolean
+          profile_done?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          browsed?: boolean
+          dismissed?: boolean
+          pitched?: boolean
+          profile_done?: boolean
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -145,10 +232,14 @@ export type Database = {
       pitch_payments: {
         Row: {
           amount: number
+          gateway: string
           id: string
+          invoice_url: string | null
+          partial_refund_flagged: boolean
           payer_id: string
           pitch_id: string
           reference_note: string | null
+          rejection_reason: string | null
           status: Database["public"]["Enums"]["pay_status"]
           submitted_at: string
           tier: Database["public"]["Enums"]["payment_tier"]
@@ -156,10 +247,14 @@ export type Database = {
         }
         Insert: {
           amount: number
+          gateway?: string
           id?: string
+          invoice_url?: string | null
+          partial_refund_flagged?: boolean
           payer_id: string
           pitch_id: string
           reference_note?: string | null
+          rejection_reason?: string | null
           status?: Database["public"]["Enums"]["pay_status"]
           submitted_at?: string
           tier: Database["public"]["Enums"]["payment_tier"]
@@ -167,10 +262,14 @@ export type Database = {
         }
         Update: {
           amount?: number
+          gateway?: string
           id?: string
+          invoice_url?: string | null
+          partial_refund_flagged?: boolean
           payer_id?: string
           pitch_id?: string
           reference_note?: string | null
+          rejection_reason?: string | null
           status?: Database["public"]["Enums"]["pay_status"]
           submitted_at?: string
           tier?: Database["public"]["Enums"]["payment_tier"]
@@ -314,46 +413,139 @@ export type Database = {
           account_type: Database["public"]["Enums"]["account_type"]
           bio: string | null
           company_name: string | null
+          company_size: string | null
+          country: string | null
           created_at: string
+          description: string | null
           email: string | null
           full_name: string | null
+          hq_city: string | null
           id: string
           industry: string | null
+          is_suspended: boolean
+          is_verified: boolean
+          linkedin_url: string | null
+          logo_url: string | null
+          one_liner: string | null
+          overall_rating: number | null
           payment_status: Database["public"]["Enums"]["payment_status"]
           plan: Database["public"]["Enums"]["plan_tier"] | null
+          response_rate: number
+          stage: string | null
+          target_industries: string[] | null
+          team_size: string | null
           updated_at: string
           user_id: string
+          verification_reason: string | null
+          verification_status: string
           website: string | null
         }
         Insert: {
           account_type?: Database["public"]["Enums"]["account_type"]
           bio?: string | null
           company_name?: string | null
+          company_size?: string | null
+          country?: string | null
           created_at?: string
+          description?: string | null
           email?: string | null
           full_name?: string | null
+          hq_city?: string | null
           id?: string
           industry?: string | null
+          is_suspended?: boolean
+          is_verified?: boolean
+          linkedin_url?: string | null
+          logo_url?: string | null
+          one_liner?: string | null
+          overall_rating?: number | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           plan?: Database["public"]["Enums"]["plan_tier"] | null
+          response_rate?: number
+          stage?: string | null
+          target_industries?: string[] | null
+          team_size?: string | null
           updated_at?: string
           user_id: string
+          verification_reason?: string | null
+          verification_status?: string
           website?: string | null
         }
         Update: {
           account_type?: Database["public"]["Enums"]["account_type"]
           bio?: string | null
           company_name?: string | null
+          company_size?: string | null
+          country?: string | null
           created_at?: string
+          description?: string | null
           email?: string | null
           full_name?: string | null
+          hq_city?: string | null
           id?: string
           industry?: string | null
+          is_suspended?: boolean
+          is_verified?: boolean
+          linkedin_url?: string | null
+          logo_url?: string | null
+          one_liner?: string | null
+          overall_rating?: number | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           plan?: Database["public"]["Enums"]["plan_tier"] | null
+          response_rate?: number
+          stage?: string | null
+          target_industries?: string[] | null
+          team_size?: string | null
           updated_at?: string
           user_id?: string
+          verification_reason?: string | null
+          verification_status?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      sla_emails_sent: {
+        Row: {
+          id: string
+          kind: string
+          pitch_id: string
+          sent_at: string
+        }
+        Insert: {
+          id?: string
+          kind: string
+          pitch_id: string
+          sent_at?: string
+        }
+        Update: {
+          id?: string
+          kind?: string
+          pitch_id?: string
+          sent_at?: string
+        }
+        Relationships: []
+      }
+      user_notification_prefs: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          key: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key?: string
+          user_id?: string
         }
         Relationships: []
       }

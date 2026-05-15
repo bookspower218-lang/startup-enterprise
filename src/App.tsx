@@ -17,6 +17,7 @@ import Browse from "./pages/dashboard/Browse.tsx";
 import Profile from "./pages/dashboard/Profile.tsx";
 import PitchThread from "./pages/dashboard/PitchThread.tsx";
 import AdminPayments from "./pages/dashboard/AdminPayments.tsx";
+import Chat from "./pages/dashboard/Chat.tsx";
 import Account from "./pages/settings/Account.tsx";
 import NotificationSettings from "./pages/settings/Notifications.tsx";
 import Billing from "./pages/settings/Billing.tsx";
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/browse" element={<ProtectedRoute><Browse /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/admin/payments" element={<ProtectedRoute><AdminPayments /></ProtectedRoute>} />
+            <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
             <Route path="/settings/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
             <Route path="/settings/notifications" element={<ProtectedRoute><NotificationSettings /></ProtectedRoute>} />
             <Route path="/settings/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />

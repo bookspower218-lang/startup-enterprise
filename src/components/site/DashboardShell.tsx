@@ -1,13 +1,22 @@
+import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Zap, LayoutDashboard, FileText, Search, LogOut, User } from "lucide-react";
+import { Zap, LayoutDashboard, FileText, Search, LogOut, User, MessageSquare, Shield } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import NotificationBell from "./NotificationBell";
 
 const DashboardShell = ({ children }: { children: React.ReactNode }) => {
-  const { profile, signOut } = useAuth();
+  const { profile, user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -17,17 +26,22 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
 
   const isCompany = profile?.account_type === "company";
 
-  const navItems = isCompany
+  const baseItems = isCompany
     ? [
         { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
         { to: "/browse", label: "Browse Pitches", icon: Search },
+        { to: "/chat", label: "Chats", icon: MessageSquare },
         { to: "/profile", label: "Profile", icon: User },
       ]
     : [
         { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
         { to: "/pitches", label: "My Pitches", icon: FileText },
+        { to: "/chat", label: "Chats", icon: MessageSquare },
         { to: "/profile", label: "Profile", icon: User },
       ];
+  const navItems = isAdmin
+    ? [...baseItems, { to: "/admin/payments", label: "Admin", icon: Shield }]
+    : baseItems;
 
   return (
     <div className="flex min-h-screen flex-col bg-background md:flex-row">

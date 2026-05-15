@@ -30,7 +30,12 @@ const Browse = () => {
   const load = async () => {
     if (!user) return;
     setLoading(true);
-    const { data } = await supabase.from("pitches").select("*").eq("target_company_id", user.id).order("created_at", { ascending: false });
+    // Validators see all pitches in the platform (open + targeted to anyone).
+    const { data } = await supabase
+      .from("pitches")
+      .select("*")
+      .neq("startup_id", user.id)
+      .order("created_at", { ascending: false });
     const list = (data as Pitch[]) ?? [];
     setPitches(list);
 

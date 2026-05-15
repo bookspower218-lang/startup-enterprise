@@ -22,15 +22,30 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const ADMIN_EMAIL = "admin@startup-enterprise.app";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = schema.safeParse({ email, password });
+    // Admin shortcut: username "admin" / password "admin123"
+    const isAdminLogin = email.trim().toLowerCase() === "admin";
+    const loginEmail = isAdminLogin ? ADMIN_EMAIL : email;
+    if (isAdminLogin) {
+      setLoading(true);
+      await supabase.functions.invoke("bootstrap-admin");
+      const { error } = await supabase.auth.signInWithPassword({ email: ADMIN_EMAIL, password });
+      setLoading(false);
+      if (error) return toast.error(error.message);
+      toast.success("Welcome, admin");
+      navigate("/admin/payments");
+      return;
+    }
+    const parsed = schema.safeParse({ email: loginEmail, password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
     setLoading(false);
     if (error) {
       toast.error(error.message);

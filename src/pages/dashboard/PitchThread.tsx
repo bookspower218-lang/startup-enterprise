@@ -132,10 +132,17 @@ const PitchThread = () => {
       if (detect) return toast.error(STAGE_BLOCK_MESSAGE);
     }
     setSending(true);
-    const { error } = await supabase.from("messages").insert({ pitch_id: pitch.id, sender_id: user.id, body: draft.trim() });
-    setSending(false);
-    if (error) return toast.error(error.message);
+    const body = draft.trim();
     setDraft("");
+    const { data, error } = await supabase
+      .from("messages")
+      .insert({ pitch_id: pitch.id, sender_id: user.id, body })
+      .select("*")
+      .single();
+    setSending(false);
+    if (error) { setDraft(body); return toast.error(error.message); }
+    // Optimistic local append (avoid wait for realtime)
+    if (data) setMessages((prev) => prev.some((m) => m.id === (data as Msg).id) ? prev : [...prev, data as Msg]);
   };
 
   return (

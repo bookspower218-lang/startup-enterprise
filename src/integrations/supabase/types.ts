@@ -238,6 +238,7 @@ export type Database = {
           partial_refund_flagged: boolean
           payer_id: string
           pitch_id: string
+          proof_path: string | null
           reference_note: string | null
           rejection_reason: string | null
           status: Database["public"]["Enums"]["pay_status"]
@@ -253,6 +254,7 @@ export type Database = {
           partial_refund_flagged?: boolean
           payer_id: string
           pitch_id: string
+          proof_path?: string | null
           reference_note?: string | null
           rejection_reason?: string | null
           status?: Database["public"]["Enums"]["pay_status"]
@@ -268,6 +270,7 @@ export type Database = {
           partial_refund_flagged?: boolean
           payer_id?: string
           pitch_id?: string
+          proof_path?: string | null
           reference_note?: string | null
           rejection_reason?: string | null
           status?: Database["public"]["Enums"]["pay_status"]

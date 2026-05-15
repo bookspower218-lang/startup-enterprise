@@ -6,8 +6,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Eye } from "lucide-react";
 
-type Row = { id: string; pitch_id: string; payer_id: string; tier: string; amount: number; reference_note: string | null; status: string; submitted_at: string };
+type Row = { id: string; pitch_id: string; payer_id: string; tier: string; amount: number; reference_note: string | null; status: string; submitted_at: string; proof_path: string | null };
 
 export default function AdminPayments() {
   const { user } = useAuth();
@@ -25,6 +26,12 @@ export default function AdminPayments() {
     setRows((data as Row[]) ?? []);
   };
   useEffect(() => { if (isAdmin) load(); }, [isAdmin]);
+
+  const viewProof = async (path: string) => {
+    const { data, error } = await supabase.storage.from("payment-proofs").createSignedUrl(path, 60 * 10);
+    if (error || !data) return toast.error("Could not load screenshot");
+    window.open(data.signedUrl, "_blank");
+  };
 
   const set = async (id: string, status: "verified" | "rejected") => {
     const { error } = await supabase.from("pitch_payments").update({ status, verified_at: status === "verified" ? new Date().toISOString() : null }).eq("id", id);
@@ -45,7 +52,12 @@ export default function AdminPayments() {
             <Badge variant="outline">{r.tier}</Badge>
             <span className="text-sm">PKR {Number(r.amount).toLocaleString()}</span>
             <span className="text-xs text-muted-foreground">Pitch: {r.pitch_id.slice(0, 8)} · Payer: {r.payer_id.slice(0, 8)}</span>
-            <span className="text-xs">Ref: {r.reference_note}</span>
+            {r.reference_note && <span className="text-xs">Note: {r.reference_note}</span>}
+            {r.proof_path && (
+              <Button size="sm" variant="outline" onClick={() => viewProof(r.proof_path!)}>
+                <Eye className="mr-1 h-3 w-3" /> View screenshot
+              </Button>
+            )}
             <Badge className="ml-auto capitalize" variant={r.status === "verified" ? "default" : r.status === "rejected" ? "destructive" : "secondary"}>{r.status}</Badge>
             {r.status === "pending" && (
               <div className="flex gap-2">

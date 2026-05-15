@@ -6,16 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, CheckCircle2, Clock } from "lucide-react";
+import { Lock, CheckCircle2, Clock, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { PAYMENT_AMOUNTS } from "@/lib/contentFilter";
 
-type Payment = { id: string; tier: "stage_3" | "stage_4"; status: "pending" | "verified" | "rejected"; amount: number };
+type Payment = { id: string; tier: "stage_3" | "stage_4"; status: "pending" | "verified" | "rejected"; amount: number; proof_path: string | null };
 
 export default function PaymentPanel({ pitchId, tier, label, onChanged }: { pitchId: string; tier: "stage_3" | "stage_4"; label: string; onChanged: () => void; }) {
   const { user } = useAuth();
   const [payment, setPayment] = useState<Payment | null>(null);
-  const [ref, setRef] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
@@ -26,15 +27,22 @@ export default function PaymentPanel({ pitchId, tier, label, onChanged }: { pitc
 
   const submit = async () => {
     if (!user) return;
-    if (!ref.trim()) return toast.error("Add a payment reference (transaction ID).");
+    if (!file) return toast.error("Please attach a screenshot of your payment.");
+    if (!file.type.startsWith("image/")) return toast.error("Screenshot must be an image file.");
+    if (file.size > 5 * 1024 * 1024) return toast.error("Image must be under 5MB.");
     setBusy(true);
+    const ext = file.name.split(".").pop() || "png";
+    const path = `${user.id}/${pitchId}-${tier}-${Date.now()}.${ext}`;
+    const up = await supabase.storage.from("payment-proofs").upload(path, file, { upsert: false });
+    if (up.error) { setBusy(false); return toast.error(up.error.message); }
     const { error } = await supabase.from("pitch_payments").insert({
-      pitch_id: pitchId, payer_id: user.id, tier, amount: PAYMENT_AMOUNTS[tier], reference_note: ref.trim(),
+      pitch_id: pitchId, payer_id: user.id, tier, amount: PAYMENT_AMOUNTS[tier],
+      reference_note: note.trim() || null, proof_path: path,
     });
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Payment submitted. Awaiting admin verification.");
-    setRef("");
+    setFile(null); setNote("");
     load();
     onChanged();
   };
@@ -49,15 +57,27 @@ export default function PaymentPanel({ pitchId, tier, label, onChanged }: { pitc
         {payment?.status === "rejected" && <Badge variant="destructive" className="ml-auto">Rejected</Badge>}
       </div>
       {!payment || payment.status === "rejected" ? (
-        <div className="flex gap-2">
-          <div className="flex-1">
-            <Label className="text-xs">Transaction reference / receipt note</Label>
-            <Input value={ref} onChange={(e) => setRef(e.target.value)} placeholder="e.g. EasyPaisa TID 234..." />
+        <div className="space-y-3">
+          <div className="rounded-md border border-border/60 bg-background/60 p-3 text-xs space-y-1">
+            <div className="font-semibold text-foreground">Send PKR {PAYMENT_AMOUNTS[tier].toLocaleString()} to one of:</div>
+            <div className="flex justify-between"><span className="text-muted-foreground">EasyPaisa</span><span>03132790207 · <span className="font-medium">Ata ur Rehman</span></span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">JazzCash</span><span>03132790207 · <span className="font-medium">Muniza Ata</span></span></div>
+            <div className="pt-1 text-muted-foreground">Then upload a screenshot of the payment confirmation below.</div>
           </div>
-          <Button onClick={submit} disabled={busy} variant="hero" className="self-end">Submit payment</Button>
+          <div>
+            <Label className="text-xs">Payment screenshot (PNG/JPG, max 5MB)</Label>
+            <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+          </div>
+          <div>
+            <Label className="text-xs">Note (optional)</Label>
+            <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Anything we should know" />
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={submit} disabled={busy || !file} variant="hero"><Upload className="mr-2 h-4 w-4" />{busy ? "Uploading..." : "Submit payment"}</Button>
+          </div>
         </div>
       ) : (
-        <p className="text-xs text-muted-foreground">Reference: {payment ? "submitted" : "—"}. You'll be notified once verified.</p>
+        <p className="text-xs text-muted-foreground">Screenshot submitted. You'll be notified once an admin verifies it.</p>
       )}
     </Card>
   );

@@ -48,7 +48,7 @@ export default function Chat() {
         ...list.map((p) => p.target_company_id).filter(Boolean) as string[],
         ...Object.values(map).map((m) => m.sender_id),
       ]));
-      const { data: profs } = await supabase.from("profiles").select("user_id,full_name,company_name").in("user_id", userIds);
+      const { data: profs } = await supabase.rpc("get_public_profiles", { _user_ids: userIds });
       const pmap: Record<string, Profile> = {};
       (profs as Profile[] ?? []).forEach((p) => (pmap[p.user_id] = p));
       setProfiles(pmap);

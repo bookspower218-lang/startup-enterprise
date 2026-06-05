@@ -56,7 +56,7 @@ export default function Chat() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, [user]);
+  useEffect(() => { load(); }, [user?.id]);
 
   useEffect(() => {
     if (!user) return;
@@ -65,7 +65,7 @@ export default function Chat() {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, load)
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [user]);
+  }, [user?.id]);
 
   return (
     <DashboardShell>

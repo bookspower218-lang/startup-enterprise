@@ -55,7 +55,7 @@ const Browse = () => {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, [user]);
+  useEffect(() => { load(); }, [user?.id]);
 
   const filtered = useMemo(() => pitches.filter((p) =>
     (!industry || p.industry === industry) && (!type || p.pitch_type === type)

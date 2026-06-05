@@ -32,7 +32,7 @@ const MyPitches = () => {
 
       const ids = Array.from(new Set(list.map((p) => p.target_company_id).filter(Boolean) as string[]));
       if (ids.length) {
-        const { data: profs } = await supabase.from("profiles").select("user_id,full_name,company_name").in("user_id", ids);
+        const { data: profs } = await supabase.rpc("get_public_profiles", { _user_ids: ids });
         const map: Record<string, Profile> = {};
         (profs as Profile[] ?? []).forEach((p) => (map[p.user_id] = p));
         setCompanies(map);

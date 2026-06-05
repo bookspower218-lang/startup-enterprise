@@ -70,7 +70,14 @@ const PitchThread = () => {
     if (!id) return;
     const ch = supabase
       .channel(`pitch-${id}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `pitch_id=eq.${id}` }, load)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `pitch_id=eq.${id}` }, ({ new: row }) => {
+        const msg = row as Msg;
+        setMessages((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, msg].sort((a, b) => a.created_at.localeCompare(b.created_at))));
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages", filter: `pitch_id=eq.${id}` }, ({ new: row }) => {
+        const msg = row as Msg;
+        setMessages((prev) => prev.map((m) => (m.id === msg.id ? msg : m)));
+      })
       .on("postgres_changes", { event: "*", schema: "public", table: "pitch_responses", filter: `pitch_id=eq.${id}` }, load)
       .subscribe();
     return () => { supabase.removeChannel(ch); };
@@ -83,10 +90,12 @@ const PitchThread = () => {
     if (!user) return;
     const unread = messages.filter((m) => m.sender_id !== user.id && !m.read_at).map((m) => m.id);
     if (unread.length) {
-      supabase.from("messages").update({ read_at: new Date().toISOString() }).in("id", unread).then(() => {});
+      const readAt = new Date().toISOString();
+      setMessages((prev) => prev.map((m) => (unread.includes(m.id) ? { ...m, read_at: readAt } : m)));
+      supabase.from("messages").update({ read_at: readAt }).in("id", unread).then(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages.length]);
+  }, [user?.id, messages]);
 
   if (loading) {
     return <DashboardShell><div className="container py-8"><Skeleton className="h-96 w-full" /></div></DashboardShell>;

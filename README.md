@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Startup Enterprise
 
 B2B startup validation marketplace (PKR). Structured pitches → company Interest/Pass → staged payments → messaging → full contact at Stage 4.
@@ -37,3 +38,8 @@ Project ref: `fhflugezbzazoydzjeue` (see your `.env`)
 supabase link --project-ref fhflugezbzazoydzjeue
 supabase db push
 ```
+=======
+# Welcome to your Lovable project
+
+TODO: Document your project here
+>>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb

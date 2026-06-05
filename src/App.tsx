@@ -1,5 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+<<<<<<< HEAD
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+=======
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+>>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,7 +14,10 @@ import Privacy from "./pages/Privacy.tsx";
 import Login from "./pages/auth/Login.tsx";
 import StartupRegister from "./pages/auth/StartupRegister.tsx";
 import CompanyRegister from "./pages/auth/CompanyRegister.tsx";
+<<<<<<< HEAD
 import OAuthComplete from "./pages/auth/OAuthComplete.tsx";
+=======
+>>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
 import Dashboard from "./pages/dashboard/Dashboard.tsx";
 import MyPitches from "./pages/dashboard/MyPitches.tsx";
 import NewPitch from "./pages/dashboard/NewPitch.tsx";
@@ -40,14 +47,20 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/startup/register" element={<StartupRegister />} />
             <Route path="/company/register" element={<CompanyRegister />} />
+<<<<<<< HEAD
             <Route path="/auth/complete" element={<OAuthComplete />} />
+=======
+>>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/pitches" element={<ProtectedRoute><MyPitches /></ProtectedRoute>} />
             <Route path="/pitches/new" element={<ProtectedRoute><NewPitch /></ProtectedRoute>} />
             <Route path="/pitches/:id" element={<ProtectedRoute><PitchThread /></ProtectedRoute>} />
             <Route path="/browse" element={<ProtectedRoute><Browse /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+<<<<<<< HEAD
             <Route path="/admin" element={<Navigate to="/admin/payments" replace />} />
+=======
+>>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
             <Route path="/admin/payments" element={<ProtectedRoute><AdminPayments /></ProtectedRoute>} />
             <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
             <Route path="/settings/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />

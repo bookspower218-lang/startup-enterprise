@@ -2,7 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+<<<<<<< HEAD
 import { signInWithGoogle } from "@/lib/oauth";
+=======
+import { lovable } from "@/integrations/lovable";
+>>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,12 +67,19 @@ const CompanyRegister = () => {
   };
 
   const handleGoogle = async () => {
+<<<<<<< HEAD
     if (!agreed) {
       toast.error("You must agree to the Terms & Conditions");
       return;
     }
     const { error } = await signInWithGoogle("company");
     if (error) toast.error(error.message || "Google sign-in failed");
+=======
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin + "/dashboard",
+    });
+    if (result.error) toast.error("Google sign-in failed");
+>>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
   };
 
   return (

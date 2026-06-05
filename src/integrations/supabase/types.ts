@@ -615,6 +615,19 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_company_profiles: {
+        Args: never
+        Returns: {
+          company_name: string
+          full_name: string
+          industry: string
+          is_verified: boolean
+          logo_url: string
+          one_liner: string
+          overall_rating: number
+          user_id: string
+        }[]
+      }
       monthly_pitch_count: { Args: { _uid: string }; Returns: number }
       plan_pitch_limit: { Args: { _uid: string }; Returns: number }
       show_limit: { Args: never; Returns: number }

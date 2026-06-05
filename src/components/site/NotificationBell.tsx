@@ -32,7 +32,7 @@ const NotificationBell = () => {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` }, () => load())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [user]);
+  }, [user?.id]);
 
   const unread = items.filter((i) => !i.read_at).length;
 

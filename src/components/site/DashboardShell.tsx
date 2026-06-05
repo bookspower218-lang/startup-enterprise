@@ -16,7 +16,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
     if (!user) return;
     supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle()
       .then(({ data }) => setIsAdmin(!!data));
-  }, [user]);
+  }, [user?.id]);
 
   const handleSignOut = async () => {
     await signOut();

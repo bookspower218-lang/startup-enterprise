@@ -36,7 +36,7 @@ const Dashboard = () => {
       setBusy(false);
     };
     load();
-  }, [profile]);
+  }, [profile?.user_id, profile?.account_type, profile?.industry]);
 
   if (loading || !profile) {
     return (

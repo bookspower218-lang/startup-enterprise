@@ -46,7 +46,7 @@ const MyPitches = () => {
       }
       setLoading(false);
     })();
-  }, [user]);
+  }, [user?.id]);
 
   return (
     <DashboardShell>

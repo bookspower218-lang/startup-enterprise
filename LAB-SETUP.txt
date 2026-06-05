@@ -1,0 +1,105 @@
+# Startup Enterprise — Lab setup via GitHub
+# Brand: Startup Enterprise | Dev server: http://localhost:8080
+
+================================================================================
+STEP 1 — Push from your dev PC (one time)
+================================================================================
+
+1. Create a new repo on GitHub (private recommended):
+   https://github.com/new
+   Name example: startup-enterprise
+
+2. In this project folder, run:
+
+   git init
+   git add .
+   git commit -m "Initial commit: Startup Enterprise MVP"
+   git branch -M main
+   git remote add origin https://github.com/YOUR_USERNAME/startup-enterprise.git
+   git push -u origin main
+
+   IMPORTANT: SECRETS.txt is gitignored and will NOT upload.
+   Copy SECRETS.txt to your lab manually (USB / Teams / password manager).
+
+================================================================================
+STEP 2 — Clone on lab PC
+================================================================================
+
+   git clone https://github.com/YOUR_USERNAME/startup-enterprise.git
+   cd startup-enterprise
+
+================================================================================
+STEP 3 — Secrets on lab PC
+================================================================================
+
+1. Copy SECRETS.txt from your dev machine into the project folder
+   (or copy SECRETS.example.txt → SECRETS.txt and fill values).
+
+2. Create .env from the frontend section in SECRETS.txt:
+
+   VITE_SUPABASE_URL=https://fhflugezbzazoydzjeue.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+   VITE_SUPABASE_PROJECT_ID=fhflugezbzazoydzjeue
+
+3. Configure Google OAuth in Supabase Dashboard (secrets are server-side):
+   https://supabase.com/dashboard/project/fhflugezbzazoydzjeue/auth/providers?provider=Google
+
+4. Set redirect URLs:
+   https://supabase.com/dashboard/project/fhflugezbzazoydzjeue/auth/url-configuration
+   - Site URL: http://localhost:8080
+   - Add: http://localhost:8080/auth/complete
+
+================================================================================
+STEP 4 — Install and run
+================================================================================
+
+   npm install
+   npm run dev
+
+   Open: http://localhost:8080
+
+   Optional checks:
+   npm run build
+   npm run test
+
+================================================================================
+STEP 5 — Database (if lab shows "profiles does not exist")
+================================================================================
+
+   supabase login
+   supabase link --project-ref fhflugezbzazoydzjeue
+   supabase db push
+
+   Run migrations in supabase/migrations/ in filename order.
+
+================================================================================
+STEP 6 — Demo accounts
+================================================================================
+
+Admin (if bootstrap-admin edge function is deployed):
+  /login → username: admin  password: admin123  → /admin
+
+Or add admin role in Supabase SQL (see SECRETS.txt).
+
+Google sign-in:
+  /login or /startup/register or /company/register → Continue with Google
+  Must complete in same browser tab (PKCE).
+
+================================================================================
+STEP 7 — Deploy later (Vercel / Netlify)
+================================================================================
+
+Set the same VITE_* env vars in hosting dashboard.
+Add production URL to Supabase redirect URLs and Google OAuth origins.
+
+================================================================================
+FILES YOU MUST NEVER COMMIT
+================================================================================
+
+  .env
+  SECRETS.txt
+  client_secret*.json
+  node_modules/
+  dist/
+
+================================================================================

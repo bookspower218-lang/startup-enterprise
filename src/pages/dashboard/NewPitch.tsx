@@ -36,11 +36,7 @@ const NewPitch = () => {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("user_id,company_name,full_name,industry")
-        .eq("account_type", "company")
-        .order("company_name");
+      const { data } = await supabase.rpc("list_company_profiles");
       setCompanies((data as Company[]) ?? []);
       setLoadingCompanies(false);
     })();

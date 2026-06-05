@@ -578,12 +578,55 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_pitch_contact: {
+        Args: { _pitch_id: string }
+        Returns: {
+          account_type: Database["public"]["Enums"]["account_type"]
+          company_name: string
+          email: string
+          full_name: string
+          user_id: string
+          website: string
+        }[]
+      }
+      get_public_profiles: {
+        Args: { _user_ids: string[] }
+        Returns: {
+          account_type: Database["public"]["Enums"]["account_type"]
+          bio: string
+          company_name: string
+          country: string
+          full_name: string
+          hq_city: string
+          industry: string
+          is_verified: boolean
+          logo_url: string
+          one_liner: string
+          overall_rating: number
+          stage: string
+          user_id: string
+          website: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      list_company_profiles: {
+        Args: never
+        Returns: {
+          company_name: string
+          full_name: string
+          industry: string
+          is_verified: boolean
+          logo_url: string
+          one_liner: string
+          overall_rating: number
+          user_id: string
+        }[]
       }
       monthly_pitch_count: { Args: { _uid: string }; Returns: number }
       plan_pitch_limit: { Args: { _uid: string }; Returns: number }

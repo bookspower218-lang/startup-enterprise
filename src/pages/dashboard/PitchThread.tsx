@@ -55,7 +55,7 @@ const PitchThread = () => {
 
       const ids = Array.from(new Set([(p as Pitch).startup_id, (p as Pitch).target_company_id].filter(Boolean) as string[]));
       if (ids.length) {
-        const { data: profs } = await supabase.from("profiles").select("user_id,full_name,company_name,account_type,email,website").in("user_id", ids);
+        const { data: profs } = await supabase.rpc("get_pitch_contact", { _pitch_id: id });
         const map: Record<string, Profile> = {};
         (profs as Profile[] ?? []).forEach((p) => (map[p.user_id] = p));
         setProfiles(map);

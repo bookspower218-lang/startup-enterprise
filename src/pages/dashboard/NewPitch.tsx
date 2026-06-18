@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { PITCH_TYPES } from "@/lib/constants";
+import { Search } from "lucide-react";
 
 const schema = z.object({
   target_company_id: z.string().uuid("Pick a target company"),
@@ -32,7 +33,16 @@ const NewPitch = () => {
   const [used, setUsed] = useState(0);
   const [limit, setLimit] = useState(5);
   const [form, setForm] = useState({ target_company_id: "", problem: "", solution: "", pitch_type: "investment", short_note: "" });
+  const [companyQuery, setCompanyQuery] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const filteredCompanies = useMemo(() => {
+    const q = companyQuery.trim().toLowerCase();
+    if (!q) return companies;
+    return companies.filter((c) =>
+      [c.company_name, c.full_name, c.industry].filter(Boolean).join(" ").toLowerCase().includes(q),
+    );
+  }, [companies, companyQuery]);
 
   useEffect(() => {
     (async () => {
@@ -107,14 +117,23 @@ const NewPitch = () => {
         <Card className="p-6">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <Label>Target Company</Label>
+              <Label>Target enterprise</Label>
+              <div className="relative mb-2">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  className="pl-9"
+                  placeholder="Search companies by name or industry…"
+                  value={companyQuery}
+                  onChange={(e) => setCompanyQuery(e.target.value)}
+                />
+              </div>
               {loadingCompanies ? (
                 <Skeleton className="h-10 w-full" />
               ) : (
                 <Select value={form.target_company_id} onValueChange={(v) => setForm({ ...form, target_company_id: v })}>
-                  <SelectTrigger><SelectValue placeholder="Pick a validator company" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Pick an enterprise to pitch" /></SelectTrigger>
                   <SelectContent>
-                    {companies.map((c) => (
+                    {filteredCompanies.map((c) => (
                       <SelectItem key={c.user_id} value={c.user_id}>
                         {c.company_name || c.full_name} {c.industry ? `· ${c.industry}` : ""}
                       </SelectItem>

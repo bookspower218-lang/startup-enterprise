@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "supabase:types": "supabase gen types typescript --project-id fhflugezbzazoydzjeue --schema public > src/integrations/supabase/types.ts",
+    "supabase:deploy-functions": "supabase functions deploy bootstrap-admin --no-verify-jwt && supabase functions deploy delete-account && supabase functions deploy export-user-data"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

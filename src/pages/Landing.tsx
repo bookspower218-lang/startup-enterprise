@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
   AccordionContent,
@@ -8,27 +9,23 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
-  UserPlus, FileText, Send, ShieldCheck,
+  FileText, Send, ShieldCheck, Check,
   Cpu, Banknote, HeartPulse, GraduationCap,
   ShoppingBag, Truck, Sprout, Building2, Clapperboard, Factory,
-  Check, Sparkles, TrendingUp, Users,
 } from "lucide-react";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
-import heroBg from "@/assets/hero-bg.jpg";
 
-const steps = [
-  { icon: UserPlus, title: "Register", desc: "Sign up as a Startup or Validator Company in minutes." },
-  { icon: FileText, title: "Build Profile", desc: "Share your problem, solution and pitch deck." },
-  { icon: Send, title: "Pitch", desc: "Send tailored pitches to verified companies." },
-  { icon: ShieldCheck, title: "Get Validated", desc: "Receive real feedback and unlock direct contact." },
+const problems = [
+  { title: "NIC rejected you", desc: "Incubators say no. Accelerators ghost you. Your idea deserves a real audience." },
+  { title: "No enterprise access", desc: "Big companies don't take cold emails. We put you in front of decision-makers." },
+  { title: "Ideas die here", desc: "Pakistan has talent. What it lacks is a bridge between founders and enterprises." },
 ];
 
-const stats = [
-  { value: "100+", label: "Validator Companies" },
-  { value: "10", label: "Industries Covered" },
-  { value: "500+", label: "Startups Validated" },
-  { value: "7 days", label: "Avg. Response Time" },
+const steps = [
+  { icon: FileText, title: "Submit your startup pitch", desc: "Share your problem, solution, and deck with verified enterprises in your industry." },
+  { icon: Send, title: "Enterprises review & respond", desc: "Real companies — not algorithms, not bots — review your pitch within 7 days." },
+  { icon: ShieldCheck, title: "Get your Validation Certificate", desc: "Earn credibility you can show investors, partners, and customers." },
 ];
 
 const industries = [
@@ -46,34 +43,31 @@ const industries = [
 
 const plans = [
   {
-    name: "Basic",
-    price: "5,000",
-    tag: "Get started",
-    features: ["Profile listing", "Pitch up to 5 companies", "Standard support", "Pitch deck hosting"],
-    highlight: false,
-  },
-  {
-    name: "Pro",
+    name: "Starter",
     price: "15,000",
-    tag: "Most popular",
-    features: ["Everything in Basic", "Pitch up to 25 companies", "Unlock company contacts", "Priority response queue", "In-platform messaging"],
-    highlight: true,
+    features: ["Profile listing", "Pitch up to 5 enterprises", "Standard support", "Pitch deck hosting"],
+    highlight: false,
   },
   {
-    name: "Premium",
-    price: "20,000",
-    tag: "For serious founders",
-    features: ["Everything in Pro", "Unlimited pitches", "Featured in industry shortlist", "Dedicated account manager", "Investor introduction support"],
+    name: "Growth",
+    price: "39,000",
+    features: ["Everything in Starter", "Pitch up to 25 enterprises", "Unlock enterprise contacts", "Priority response queue", "In-platform messaging"],
     highlight: false,
+  },
+  {
+    name: "Scale",
+    price: "50,999",
+    features: ["Everything in Growth", "Unlimited pitches", "Featured in industry shortlist", "Dedicated account manager", "Investor introduction support"],
+    highlight: true,
   },
 ];
 
 const faqs = [
-  { q: "How does Startup Enterprise actually work?", a: "Startups register, build a profile and pitch deck, and send pitches to verified companies in their industry. Companies review and either show interest or pass. When both sides engage, contact is unlocked through the platform." },
-  { q: "Why do startups have to pay?", a: "Companies receive curated, paid pitches only — this filters serious founders from spam and guarantees a 7-day response SLA from validator companies." },
-  { q: "Can I contact a company outside the platform?", a: "No. All communication must happen through Startup Enterprise. Going around the platform is a breach of contract and can result in account termination." },
-  { q: "What happens if a company doesn't respond?", a: "Validator companies commit to a 7-day response SLA. If they fail to respond, you can flag the pitch and request a re-route to another company at no extra cost." },
-  { q: "Is the registration fee refundable?", a: "The PKR 5,000 registration fee is non-refundable. The PKR 15,000 unlock fee is only charged when a company shows interest in your pitch." },
+  { q: "How does validation actually work?", a: "Startups register, build a profile and pitch deck, and send pitches to verified enterprises in their industry. Companies review and either show interest or pass. When both sides engage, contact is unlocked through the platform." },
+  { q: "Why do startups have to pay?", a: "Enterprises receive curated, paid pitches only — this filters serious founders from spam and guarantees a 7-day response SLA from validator companies." },
+  { q: "Can I contact an enterprise outside the platform?", a: "No. All communication must happen through ValidatePK. Going around the platform is a breach of contract and can result in account termination." },
+  { q: "What happens if an enterprise doesn't respond?", a: "Validator enterprises commit to a 7-day response SLA. If they fail to respond, you can flag the pitch and request a re-route to another company at no extra cost." },
+  { q: "Is the registration fee refundable?", a: "Registration fees are non-refundable. Unlock fees are only charged when an enterprise shows interest in your pitch." },
 ];
 
 const Landing = () => {
@@ -82,50 +76,41 @@ const Landing = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10 opacity-60"
-          style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center" }}
-        />
-        <div className="absolute inset-0 -z-10 bg-hero" />
-        <div className="absolute inset-0 -z-10 bg-grid" />
-
-        <div className="container py-24 md:py-36">
-          <div className="mx-auto max-w-4xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-medium text-gold">
-              <Sparkles className="h-3.5 w-3.5" />
-              Trusted by 100+ companies across Pakistan
-            </div>
-            <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
-              Stop Burning Money on Ads.
-              <span className="block bg-gradient-primary bg-clip-text text-transparent">
-                Validate Your Startup with Real Companies.
-              </span>
+      <section className="section-padding">
+        <div className="container">
+          <div className="mx-auto max-w-3xl text-center">
+            <h1 className="text-display md:text-[48px]">
+              Pakistan ka pehla startup validation platform.
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
-              Startup Enterprise connects ambitious founders directly with verified B2B validator companies — get real feedback, real interest, and real contracts.
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+              Get your idea reviewed by real enterprises.
+              Not algorithms. Not bots. Real companies.
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button asChild variant="hero" size="xl">
-                <Link to="/startup/register">Register as Startup</Link>
+              <Button asChild variant="accent" size="lg">
+                <Link to="/register">Start for 15,000 PKR</Link>
               </Button>
-              <Button asChild variant="goldOutline" size="xl">
-                <Link to="/company/register">Join as Validator Company</Link>
+              <Button asChild variant="secondary" size="lg">
+                <Link to="/#how">See how it works</Link>
               </Button>
             </div>
 
-            <p className="mt-6 text-xs text-muted-foreground">
-              Free for companies · Startups from PKR 5,000
+            <p className="mt-8 text-sm text-muted-foreground">
+              47 startups validated · 12 enterprise partners
             </p>
           </div>
+        </div>
+      </section>
 
-          {/* Stats bar */}
-          <div className="mx-auto mt-24 grid max-w-5xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border/60 bg-border/60 md:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.label} className="bg-card/80 p-6 text-center backdrop-blur">
-                <div className="font-display text-3xl font-bold text-foreground md:text-4xl">{s.value}</div>
-                <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{s.label}</div>
+      {/* Problem strip */}
+      <section id="features" className="border-y border-border bg-card">
+        <div className="container section-padding">
+          <div className="grid gap-8 md:grid-cols-3">
+            {problems.map((p) => (
+              <div key={p.title} className="text-center md:text-left">
+                <h3 className="text-lg font-semibold">{p.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.desc}</p>
               </div>
             ))}
           </div>
@@ -133,43 +118,41 @@ const Landing = () => {
       </section>
 
       {/* How it works */}
-      <section id="how" className="container py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-display text-3xl font-bold md:text-5xl">How Startup Enterprise works</h2>
-          <p className="mt-4 text-muted-foreground">From signup to validation in four straightforward steps.</p>
-        </div>
+      <section id="how" className="section-padding">
+        <div className="container">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">How it works</h2>
+            <p className="mt-4 text-muted-foreground">Three steps from pitch to validation certificate.</p>
+          </div>
 
-        <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {steps.map((s, i) => (
-            <Card key={s.title} className="relative overflow-hidden border-border/60 bg-card/60 p-6 transition-all hover:border-primary/50 hover:shadow-elegant">
-              <div className="absolute -right-4 -top-4 font-display text-7xl font-bold text-primary/10">
-                0{i + 1}
-              </div>
-              <div className="relative">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-primary shadow-elegant">
-                  <s.icon className="h-6 w-6 text-primary-foreground" />
+          <div className="mt-16 grid gap-8 md:grid-cols-3">
+            {steps.map((s, i) => (
+              <Card key={s.title} className="p-6">
+                <div className="text-label mb-4 text-muted-foreground">Step {i + 1}</div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-background">
+                  <s.icon className="h-6 w-6 text-foreground" />
                 </div>
-                <h3 className="mt-5 font-display text-lg font-semibold">{s.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
-              </div>
-            </Card>
-          ))}
+                <h3 className="mt-5 text-lg font-semibold">{s.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Industries */}
-      <section id="industries" className="border-y border-border/40 bg-card/30 py-24">
+      <section id="industries" className="border-y border-border bg-card section-padding">
         <div className="container">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold md:text-5xl">10 Industries. One platform.</h2>
-            <p className="mt-4 text-muted-foreground">Validators across the sectors that matter most.</p>
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">10 industries. One platform.</h2>
+            <p className="mt-4 text-muted-foreground">Enterprises across the sectors that matter most.</p>
           </div>
 
           <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
             {industries.map((ind) => (
-              <Card key={ind.name} className="group flex flex-col items-center gap-3 border-border/60 bg-background/50 p-6 transition-all hover:-translate-y-1 hover:border-gold/50 hover:shadow-gold">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary group-hover:bg-gold/10">
-                  <ind.icon className="h-6 w-6 text-primary group-hover:text-gold" />
+              <Card key={ind.name} className="flex flex-col items-center gap-3 rounded-lg p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-background">
+                  <ind.icon className="h-6 w-6 text-foreground" />
                 </div>
                 <span className="text-sm font-medium">{ind.name}</span>
               </Card>
@@ -179,143 +162,104 @@ const Landing = () => {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="container py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-display text-3xl font-bold md:text-5xl">Simple, transparent pricing</h2>
-          <p className="mt-4 text-muted-foreground">Pay once to register. Pay again only when a company shows interest.</p>
-        </div>
+      <section id="pricing" className="section-padding">
+        <div className="container">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Simple, transparent pricing</h2>
+            <p className="mt-4 text-muted-foreground">Pay once to register. Pay again only when an enterprise shows interest.</p>
+          </div>
 
-        <div className="mt-16 grid gap-6 md:grid-cols-3">
-          {plans.map((p) => (
-            <Card
-              key={p.name}
-              className={`relative overflow-hidden p-8 transition-all ${
-                p.highlight
-                  ? "border-gold/60 bg-card shadow-gold scale-[1.02]"
-                  : "border-border/60 bg-card/60 hover:border-primary/40"
-              }`}
-            >
-              {p.highlight && (
-                <div className="absolute right-4 top-4 rounded-full bg-gradient-gold px-3 py-1 text-xs font-semibold text-gold-foreground">
-                  {p.tag}
-                </div>
-              )}
-              <h3 className="font-display text-2xl font-bold">{p.name}</h3>
-              <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Startup {p.tag}</p>
-              <div className="mt-6 flex items-baseline gap-1">
-                <span className="text-sm text-muted-foreground">PKR</span>
-                <span className="font-display text-5xl font-bold">{p.price}</span>
-              </div>
-              <ul className="mt-6 space-y-3">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className={`mt-0.5 h-4 w-4 shrink-0 ${p.highlight ? "text-gold" : "text-primary"}`} />
-                    <span className="text-muted-foreground">{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button
-                asChild
-                variant={p.highlight ? "gold" : "hero"}
-                className="mt-8 w-full"
+          <div className="mt-16 grid gap-8 md:grid-cols-3">
+            {plans.map((p) => (
+              <Card
+                key={p.name}
+                className={`p-6 ${p.highlight ? "border-foreground" : ""}`}
               >
-                <Link to="/startup/register">Choose {p.name}</Link>
-              </Button>
-            </Card>
-          ))}
+                {p.highlight && (
+                  <Badge variant="validated" className="mb-4">Recommended</Badge>
+                )}
+                <h3 className="text-2xl font-bold">{p.name}</h3>
+                <div className="mt-4 flex items-baseline gap-1">
+                  <span className="text-sm text-muted-foreground">PKR</span>
+                  <span className="text-4xl font-bold">{p.price}</span>
+                </div>
+                <ul className="mt-6 space-y-3">
+                  {p.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-sm">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                      <span className="text-muted-foreground">{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  asChild
+                  variant={p.highlight ? "accent" : "default"}
+                  className="mt-8 w-full"
+                >
+                  <Link to="/register">Choose {p.name}</Link>
+                </Button>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Why companies join */}
-      <section className="border-y border-border/40 bg-card/30 py-24">
-        <div className="container grid items-center gap-12 lg:grid-cols-2">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium text-gold">
-              <TrendingUp className="h-3.5 w-3.5" /> For validator companies
-            </div>
-            <h2 className="mt-4 font-display text-3xl font-bold md:text-4xl">
-              Get early access to the next big thing — for free.
+      {/* Enterprise strip */}
+      <section id="enterprises" className="bg-inverted section-padding">
+        <div className="container">
+          <div className="mx-auto max-w-2xl text-center">
+            <Badge variant="enterprise" className="mb-6">For enterprises</Badge>
+            <h2 className="text-3xl font-bold tracking-tight text-inverted-foreground md:text-4xl">
+              Are you an enterprise?
             </h2>
-            <p className="mt-4 text-muted-foreground">
-              Hear curated pitches from serious founders in your industry. No commitment, zero spam, full control over what you accept.
+            <p className="mt-4 text-lg leading-relaxed text-inverted-foreground/80">
+              Discover Pakistan&apos;s next unicorns before anyone else.
             </p>
-            <ul className="mt-6 space-y-3 text-sm">
-              {[
-                "Curated pitches matched to your interests",
-                "Zero commitment — accept or decline any pitch",
-                "Verified founders with skin in the game",
-                "Direct contact only after mutual interest",
-              ].map((b) => (
-                <li key={b} className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 text-gold" />
-                  <span>{b}</span>
-                </li>
-              ))}
-            </ul>
-            <Button asChild variant="goldOutline" size="lg" className="mt-8">
-              <Link to="/company/register">Join as Validator</Link>
+            <Button asChild variant="accent" size="lg" className="mt-8 bg-accent-on-dark text-inverted hover:bg-accent-on-dark/90">
+              <Link to="/register?type=company">Become a Validation Partner</Link>
             </Button>
           </div>
-          <Card className="border-border/60 bg-background/50 p-8 shadow-elegant">
-            <div className="flex items-center gap-3 border-b border-border/50 pb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                <Users className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <div>
-                <div className="font-display font-semibold">Incoming pitch</div>
-                <div className="text-xs text-muted-foreground">FinTech · Seeking Investment</div>
-              </div>
-            </div>
-            <p className="mt-4 text-sm text-muted-foreground">
-              "We help SMEs in Pakistan automate invoice reconciliation using AI — already saving customers 12 hours/week..."
-            </p>
-            <div className="mt-6 flex gap-3">
-              <Button variant="default" className="flex-1 bg-success text-success-foreground hover:bg-success/90">
-                Show Interest
-              </Button>
-              <Button variant="secondary" className="flex-1">Pass</Button>
-            </div>
-          </Card>
         </div>
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="container py-24">
-        <div className="mx-auto max-w-3xl">
-          <div className="text-center">
-            <h2 className="font-display text-3xl font-bold md:text-5xl">Frequently asked questions</h2>
-            <p className="mt-4 text-muted-foreground">Everything you need to know before you pitch.</p>
-          </div>
+      <section id="faq" className="section-padding">
+        <div className="container">
+          <div className="mx-auto max-w-3xl">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Frequently asked questions</h2>
+              <p className="mt-4 text-muted-foreground">Everything you need to know before you pitch.</p>
+            </div>
 
-          <Accordion type="single" collapsible className="mt-12">
-            {faqs.map((f, i) => (
-              <AccordionItem key={i} value={`item-${i}`} className="border-border/60">
-                <AccordionTrigger className="text-left font-display text-base font-semibold hover:no-underline">
-                  {f.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+            <Accordion type="single" collapsible className="mt-12">
+              {faqs.map((f, i) => (
+                <AccordionItem key={i} value={`item-${i}`} className="border-border">
+                  <AccordionTrigger className="text-left text-base font-semibold hover:no-underline">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="leading-relaxed text-muted-foreground">{f.a}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="container pb-24">
-        <Card className="relative overflow-hidden border-gold/30 bg-gradient-to-br from-card to-background p-10 text-center md:p-16">
-          <div className="absolute inset-0 -z-10 bg-grid opacity-50" />
-          <h2 className="font-display text-3xl font-bold md:text-5xl">
-            Your next customer is waiting.
+      <section className="container pb-16 md:pb-24">
+        <Card className="p-10 text-center md:p-16">
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+            Ready to get validated?
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            Stop guessing. Start validating. Join hundreds of founders building real businesses with real feedback.
+          <p className="mx-auto mt-4 max-w-xl leading-relaxed text-muted-foreground">
+            We open doors. You walk through them.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button asChild variant="hero" size="xl">
-              <Link to="/startup/register">Register your startup</Link>
+            <Button asChild variant="accent" size="lg">
+              <Link to="/register">Apply for Validation</Link>
             </Button>
-            <Button asChild variant="goldOutline" size="xl">
-              <Link to="/company/register">Join as company</Link>
+            <Button asChild variant="secondary" size="lg">
+              <Link to="/register?type=company">Join as Enterprise</Link>
             </Button>
           </div>
         </Card>

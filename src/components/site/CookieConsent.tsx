@@ -24,16 +24,16 @@ const CookieConsent = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[60] border-t border-border/60 bg-card/95 backdrop-blur shadow-lg">
+    <div className="fixed bottom-0 left-0 right-0 z-[60] border-t border-border bg-card">
       <div className="container flex flex-col items-start gap-3 py-4 sm:flex-row sm:items-center sm:gap-6">
-        <Cookie className="h-5 w-5 shrink-0 text-primary" />
+        <Cookie className="h-5 w-5 shrink-0 text-foreground" />
         <p className="flex-1 text-sm text-muted-foreground">
           We use essential cookies to run the platform and optional analytics to improve it. See our{" "}
-          <Link to="/privacy" className="text-primary underline">Privacy Policy</Link>.
+          <Link to="/privacy" className="text-foreground underline">Privacy Policy</Link>.
         </p>
         <div className="flex gap-2">
           <Button size="sm" variant="ghost" onClick={() => set("declined")}>Decline</Button>
-          <Button size="sm" variant="hero" onClick={() => set("accepted")}>Accept</Button>
+          <Button size="sm" onClick={() => set("accepted")}>Accept</Button>
         </div>
       </div>
     </div>

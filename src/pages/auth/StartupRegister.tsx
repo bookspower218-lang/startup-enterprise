@@ -2,11 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-<<<<<<< HEAD
 import { signInWithGoogle } from "@/lib/oauth";
-=======
-import { lovable } from "@/integrations/lovable";
->>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,24 +56,17 @@ const StartupRegister = () => {
       toast.error(error.message);
       return;
     }
-    toast.success("Account created! Welcome to Startup Enterprise.");
+    toast.success("Account created! Welcome to ValidatePK.");
     navigate("/dashboard");
   };
 
   const handleGoogle = async () => {
-<<<<<<< HEAD
     if (!agreed) {
       toast.error("You must agree to the Terms & Conditions");
       return;
     }
     const { error } = await signInWithGoogle("startup");
     if (error) toast.error(error.message || "Google sign-in failed");
-=======
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/dashboard",
-    });
-    if (result.error) toast.error("Google sign-in failed");
->>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
   };
 
   return (
@@ -85,7 +74,7 @@ const StartupRegister = () => {
       <Navbar />
       <main className="container flex flex-1 items-center justify-center py-12">
         <Card className="w-full max-w-md p-8">
-          <h1 className="font-display text-3xl font-bold">Join as Startup</h1>
+          <h1 className="text-3xl font-bold">Join as Startup</h1>
           <p className="mt-2 text-sm text-muted-foreground">Validate your idea with real companies.</p>
 
           <Button onClick={handleGoogle} variant="outline" className="mt-6 w-full">
@@ -121,7 +110,7 @@ const StartupRegister = () => {
               <Checkbox checked={agreed} onCheckedChange={(v) => setAgreed(!!v)} className="mt-0.5" />
               <span>I have read and agree to the <Link to="/terms" target="_blank" className="text-primary underline">Terms & Conditions</Link>, including the prohibition on platform bypass and the non-refundable PKR 5,000 registration fee.</span>
             </label>
-            <Button type="submit" variant="hero" className="w-full" disabled={loading}>
+            <Button type="submit" variant="accent" className="w-full" disabled={loading}>
               {loading ? "Creating..." : "Create Account"}
             </Button>
           </form>

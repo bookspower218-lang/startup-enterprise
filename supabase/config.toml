@@ -1,7 +1,10 @@
-<<<<<<< HEAD
 project_id = "fhflugezbzazoydzjeue"
-=======
-project_id = "lkexubixchcochkkadrg"
->>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
+
 [functions.bootstrap-admin]
 verify_jwt = false
+
+[functions.delete-account]
+verify_jwt = true
+
+[functions.export-user-data]
+verify_jwt = true

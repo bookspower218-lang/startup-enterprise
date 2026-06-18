@@ -2,11 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-<<<<<<< HEAD
 import { signInWithGoogle } from "@/lib/oauth";
-=======
-import { lovable } from "@/integrations/lovable";
->>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,20 +56,8 @@ const Login = () => {
   };
 
   const handleGoogle = async () => {
-<<<<<<< HEAD
     const { error } = await signInWithGoogle();
     if (error) toast.error(error.message || "Google sign-in failed");
-=======
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/dashboard",
-    });
-    if (result.error) {
-      toast.error("Google sign-in failed");
-      return;
-    }
-    if (result.redirected) return;
-    navigate("/dashboard");
->>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
   };
 
   return (
@@ -81,8 +65,8 @@ const Login = () => {
       <Navbar />
       <main className="container flex flex-1 items-center justify-center py-12">
         <Card className="w-full max-w-md p-8">
-          <h1 className="font-display text-3xl font-bold">Welcome back</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Log in to your Startup Enterprise account.</p>
+          <h1 className="text-3xl font-bold">Welcome back</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Log in to your ValidatePK account.</p>
 
           <Button onClick={handleGoogle} variant="outline" className="mt-6 w-full">
             Continue with Google
@@ -100,19 +84,15 @@ const Login = () => {
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
-            <Button type="submit" variant="hero" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             New here?{" "}
-            <Link to="/startup/register" className="text-primary hover:underline">
-              Join as Startup
-            </Link>{" "}
-            or{" "}
-            <Link to="/company/register" className="text-primary hover:underline">
-              Validator Company
+            <Link to="/register" className="text-foreground hover:underline">
+              Create an account
             </Link>
           </p>
         </Card>

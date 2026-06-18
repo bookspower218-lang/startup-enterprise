@@ -50,14 +50,14 @@ const NotificationBell = () => {
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
           {unread > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-gold-foreground">
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-md bg-accent px-1 text-[10px] font-bold text-accent-foreground">
               {unread}
             </span>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
-        <div className="border-b border-border/50 px-4 py-3 font-display text-sm font-semibold">Notifications</div>
+        <div className="border-b border-border px-4 py-3 text-sm font-semibold">Notifications</div>
         <div className="max-h-96 divide-y divide-border/40 overflow-y-auto">
           {items.length === 0 ? (
             <div className="p-6 text-center text-sm text-muted-foreground">No notifications yet.</div>

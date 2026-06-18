@@ -2,72 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* STARTUP VALIDATOR — Design System v1.0
+   All colors MUST be HSL for Tailwind compatibility. */
 
 @layer base {
   :root {
-    /* Startup Enterprise — dark professional theme */
-    --background: 224 53% 7%;            /* #0A0F1E midnight */
-    --foreground: 210 40% 98%;
+    /* Core palette */
+    --background: 45 20% 96%;              /* #F7F6F2 warm off-white */
+    --foreground: 0 0% 9%;               /* #161616 primary text */
 
-    --card: 224 45% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 40 16% 91%;                    /* #EDEAE3 surface/cards */
+    --card-foreground: 0 0% 9%;
 
-    --popover: 224 45% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 40 16% 91%;
+    --popover-foreground: 0 0% 9%;
 
-    --primary: 218 73% 53%;              /* #2D6CDF electric blue */
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 218 90% 65%;
+    /* Primary = dark authority button (#161616) */
+    --primary: 0 0% 9%;
+    --primary-foreground: 45 20% 96%;
 
-    --gold: 36 91% 55%;                  /* #F5A623 */
-    --gold-foreground: 224 53% 7%;
-
-    --secondary: 224 40% 14%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 224 30% 16%;
-    --muted-foreground: 215 20% 70%;
-
-    --accent: 218 73% 53%;
+    /* Accent = Pakistani green CTA (#1B6B3A) */
+    --accent: 144 58% 26%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
+    --enterprise: 210 55% 23%;             /* #1A3A5C */
+    --enterprise-foreground: 0 0% 100%;
 
-    --success: 142 71% 45%;
+    --secondary: 40 16% 91%;
+    --secondary-foreground: 0 0% 9%;
+
+    --muted: 40 16% 91%;
+    --muted-foreground: 0 0% 36%;        /* #5C5C5C */
+
+    --destructive: 0 70% 35%;            /* #991B1B */
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 144 58% 26%;
     --success-foreground: 0 0% 100%;
 
-    --border: 220 30% 18%;
-    --input: 220 30% 18%;
-    --ring: 218 73% 53%;
+    --warning: 25 91% 37%;                 /* #B45309 */
+    --warning-foreground: 0 0% 100%;
 
-    --radius: 0.625rem;
+    --border: 36 14% 85%;                  /* #DEDAD3 */
+    --input: 36 14% 85%;
+    --ring: 0 0% 9%;
 
-    --gradient-hero: radial-gradient(ellipse at top, hsl(218 73% 53% / 0.18), transparent 60%), linear-gradient(180deg, hsl(224 53% 7%) 0%, hsl(224 53% 5%) 100%);
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-gold: linear-gradient(135deg, hsl(36 91% 60%), hsl(36 91% 48%));
-    --shadow-elegant: 0 20px 60px -20px hsl(218 73% 53% / 0.4);
-    --shadow-gold: 0 12px 40px -12px hsl(36 91% 55% / 0.45);
-    --grid-color: hsl(220 40% 18% / 0.5);
+    --radius: 0.5rem;                      /* 8px base */
 
-    --sidebar-background: 0 0% 98%;
+    /* Inverted feature cards (hero blocks on dark bg) */
+    --inverted: 0 0% 9%;
+    --inverted-foreground: 45 20% 96%;
+    --accent-on-dark: 142 53% 43%;         /* #34A85A */
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 45 20% 96%;
+    --sidebar-foreground: 0 0% 9%;
+    --sidebar-primary: 0 0% 9%;
+    --sidebar-primary-foreground: 45 20% 96%;
+    --sidebar-accent: 40 16% 91%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 36 14% 85%;
+    --sidebar-ring: 0 0% 9%;
   }
 }
 
@@ -79,29 +73,57 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "ss01", "cv01";
+    line-height: 1.65;
   }
 
-  h1, h2, h3, h4, h5 {
-    font-family: 'Syne', system-ui, sans-serif;
+  h1 {
+    @apply text-4xl font-bold tracking-tight;
     letter-spacing: -0.02em;
+  }
+
+  h2 {
+    @apply text-[28px] font-semibold tracking-tight;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    @apply text-xl font-semibold;
+  }
+
+  h4, h5 {
+    @apply font-semibold tracking-tight;
   }
 }
 
 @layer utilities {
-  .bg-grid {
-    background-image:
-      linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  .text-display {
+    @apply text-5xl font-bold;
+    letter-spacing: -0.03em;
   }
-  .bg-hero {
-    background: var(--gradient-hero);
+
+  .text-label {
+    @apply text-xs font-semibold uppercase;
+    letter-spacing: 0.04em;
   }
-  .text-gold {
-    color: hsl(var(--gold));
+
+  .text-caption {
+    @apply text-[11px] text-muted-foreground;
   }
-  .bg-gold {
-    background-color: hsl(var(--gold));
+
+  .bg-inverted {
+    background-color: hsl(var(--inverted));
+    color: hsl(var(--inverted-foreground));
+  }
+
+  .text-accent-on-dark {
+    color: hsl(var(--accent-on-dark));
+  }
+
+  .bg-accent-on-dark {
+    background-color: hsl(var(--accent-on-dark));
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24;
   }
 }

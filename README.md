@@ -1,21 +1,14 @@
-<<<<<<< HEAD
-# Startup Enterprise
+# ValidatePK
 
-B2B startup validation marketplace (PKR). Structured pitches → company Interest/Pass → staged payments → messaging → full contact at Stage 4.
+Pakistan's startup validation platform. Structured pitches → enterprise review → staged messaging → contact unlock.
 
 ## Quick start
 
 ```bash
 npm install
-cp .env.example .env   # fill from SECRETS.txt (local only, not in repo)
+cp .env.example .env   # fill Supabase URL + publishable key
 npm run dev            # http://localhost:8080
 ```
-
-## Lab / GitHub setup
-
-See **[LAB-SETUP.txt](./LAB-SETUP.txt)** for cloning from GitHub and configuring a new machine.
-
-Secrets template: **[SECRETS.example.txt](./SECRETS.example.txt)** — copy to `SECRETS.txt` locally (gitignored).
 
 ## Stack
 
@@ -26,20 +19,14 @@ React 18 · Vite · TypeScript · Tailwind · shadcn · TanStack Query · Supaba
 | Command | Purpose |
 |---------|---------|
 | `npm run dev` | Dev server (port 8080) |
-| `npm run build` | Production build |
+| `npm run build` | Production build → `dist/` |
+| `npm run preview` | Preview production build locally |
 | `npm run test` | Vitest |
-| `npm run lint` | ESLint |
 
 ## Supabase
 
-Project ref: `fhflugezbzazoydzjeue` (see your `.env`)
+Project ref: `fhflugezbzazoydzjeue`
 
-```bash
-supabase link --project-ref fhflugezbzazoydzjeue
-supabase db push
-```
-=======
-# Welcome to your Lovable project
+Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in `.env` (and in your host's env vars when deploying).
 
-TODO: Document your project here
->>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
+After deploying, add your site URL to **Supabase → Authentication → URL configuration** (Site URL + redirect URLs including `/auth/complete`).

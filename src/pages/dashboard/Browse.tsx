@@ -7,7 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Inbox, MessageSquare } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Search, Inbox, MessageSquare } from "lucide-react";
 import { INDUSTRIES, PITCH_TYPES } from "@/lib/constants";
 import { toast } from "sonner";
 
@@ -26,6 +27,7 @@ const Browse = () => {
   const [loading, setLoading] = useState(true);
   const [industry, setIndustry] = useState<string | null>(null);
   const [type, setType] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
 
   const load = async () => {
     if (!user) return;
@@ -57,9 +59,20 @@ const Browse = () => {
 
   useEffect(() => { load(); }, [user?.id]);
 
-  const filtered = useMemo(() => pitches.filter((p) =>
-    (!industry || p.industry === industry) && (!type || p.pitch_type === type)
-  ), [pitches, industry, type]);
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return pitches.filter((p) => {
+      if (industry && p.industry !== industry) return false;
+      if (type && p.pitch_type !== type) return false;
+      if (!q) return true;
+      const startup = profiles[p.startup_id];
+      const haystack = [
+        p.problem, p.solution, p.short_note, p.industry, p.pitch_type,
+        startup?.full_name, startup?.company_name,
+      ].filter(Boolean).join(" ").toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [pitches, industry, type, query, profiles]);
 
   const respond = async (pitchId: string, decision: "interested" | "pass") => {
     if (!user) return;
@@ -75,8 +88,18 @@ const Browse = () => {
     <DashboardShell>
       <div className="container space-y-6 py-8">
         <div>
-          <h1 className="font-display text-3xl font-bold">Incoming Pitches</h1>
-          <p className="mt-1 text-muted-foreground">Review and decide. You have 7 days per pitch.</p>
+          <h1 className="text-3xl font-bold">Discover pitches</h1>
+          <p className="mt-1 text-muted-foreground">Search and review startup ideas across the platform.</p>
+        </div>
+
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            className="pl-9"
+            placeholder="Search problem, solution, industry, founder…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">

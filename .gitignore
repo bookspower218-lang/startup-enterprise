@@ -8,14 +8,11 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-<<<<<<< HEAD
 .env
 .env.*
 !.env.example
 SECRETS.txt
 client_secret*.json
-=======
->>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
 dist
 dist-ssr
 *.local

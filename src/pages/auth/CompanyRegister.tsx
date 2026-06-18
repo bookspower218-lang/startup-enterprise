@@ -2,11 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-<<<<<<< HEAD
 import { signInWithGoogle } from "@/lib/oauth";
-=======
-import { lovable } from "@/integrations/lovable";
->>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,19 +63,12 @@ const CompanyRegister = () => {
   };
 
   const handleGoogle = async () => {
-<<<<<<< HEAD
     if (!agreed) {
       toast.error("You must agree to the Terms & Conditions");
       return;
     }
     const { error } = await signInWithGoogle("company");
     if (error) toast.error(error.message || "Google sign-in failed");
-=======
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/dashboard",
-    });
-    if (result.error) toast.error("Google sign-in failed");
->>>>>>> 5e99968392e79ca4817bb7a35153320c280a7ceb
   };
 
   return (
@@ -87,7 +76,7 @@ const CompanyRegister = () => {
       <Navbar />
       <main className="container flex flex-1 items-center justify-center py-12">
         <Card className="w-full max-w-md p-8">
-          <h1 className="font-display text-3xl font-bold">Join as Validator <span className="text-gold">Company</span></h1>
+          <h1 className="text-3xl font-bold">Join as <span className="text-enterprise">Enterprise</span></h1>
           <p className="mt-2 text-sm text-muted-foreground">Free signup. Receive curated startup pitches in your industry.</p>
 
           <Button onClick={handleGoogle} variant="outline" className="mt-6 w-full">
@@ -125,15 +114,15 @@ const CompanyRegister = () => {
             </div>
             <label className="flex items-start gap-2 text-xs text-muted-foreground">
               <Checkbox checked={agreed} onCheckedChange={(v) => setAgreed(!!v)} className="mt-0.5" />
-              <span>I have read and agree to the <Link to="/terms" target="_blank" className="text-primary underline">Terms & Conditions</Link>, including the 7-day response SLA and the prohibition on sharing contact details outside the platform.</span>
+              <span>I have read and agree to the <Link to="/terms" target="_blank" className="text-foreground underline">Terms & Conditions</Link>, including the 7-day response SLA and the prohibition on sharing contact details outside the platform.</span>
             </label>
-            <Button type="submit" variant="gold" className="w-full" disabled={loading}>
+            <Button type="submit" variant="accent" className="w-full" disabled={loading}>
               {loading ? "Creating..." : "Create Account"}
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            Already a member? <Link to="/login" className="text-primary hover:underline">Sign in</Link>
+            Already a member? <Link to="/login" className="text-foreground hover:underline">Sign in</Link>
           </p>
         </Card>
       </main>

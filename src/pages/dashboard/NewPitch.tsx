@@ -73,6 +73,10 @@ const NewPitch = () => {
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     if (used >= limit) return toast.error(`Monthly pitch limit reached (${limit}). Upgrade your plan.`);
 
+    if (profile?.payment_status !== "verified" && trialRemaining <= 0) {
+      return toast.error(`Complete registration payment (PKR 5,000) or use your free trial (${FREE_TRIAL_COMPANY_LIMIT} companies).`);
+    }
+
     // Block resubmission within 90 days of a Pass response to same company
     const { data: existing } = await supabase
       .from("pitches")

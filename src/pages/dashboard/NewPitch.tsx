@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { PITCH_TYPES } from "@/lib/constants";
+import { FREE_TRIAL_COMPANY_LIMIT } from "@/lib/freeTrial";
 import { Search } from "lucide-react";
 
 const schema = z.object({
@@ -32,6 +33,7 @@ const NewPitch = () => {
   const [loadingCompanies, setLoadingCompanies] = useState(true);
   const [used, setUsed] = useState(0);
   const [limit, setLimit] = useState(5);
+  const [trialRemaining, setTrialRemaining] = useState(FREE_TRIAL_COMPANY_LIMIT);
   const [form, setForm] = useState({ target_company_id: "", problem: "", solution: "", pitch_type: "investment", short_note: "" });
   const [companyQuery, setCompanyQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -57,8 +59,10 @@ const NewPitch = () => {
     (async () => {
       const { data: u } = await supabase.rpc("monthly_pitch_count", { _uid: user.id });
       const { data: l } = await supabase.rpc("plan_pitch_limit", { _uid: user.id });
+      const { data: trial } = await supabase.rpc("startup_free_trial_remaining", { _startup_id: user.id });
       if (typeof u === "number") setUsed(u);
       if (typeof l === "number") setLimit(l);
+      if (typeof trial === "number") setTrialRemaining(trial);
     })();
   }, [user]);
 
@@ -108,9 +112,15 @@ const NewPitch = () => {
       <div className="container max-w-2xl space-y-6 py-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="font-display text-3xl font-bold">Send a Pitch</h1>
-          <div className="rounded-full border border-border/60 bg-card px-4 py-1.5 text-xs">
-            <span className="text-muted-foreground">This month:</span>{" "}
-            <span className="font-semibold">{used}/{limit === 1000000 ? "∞" : limit}</span>
+          <div className="flex flex-wrap gap-2">
+            <div className="rounded-full border border-border/60 bg-card px-4 py-1.5 text-xs">
+              <span className="text-muted-foreground">This month:</span>{" "}
+              <span className="font-semibold">{used}/{limit === 1000000 ? "∞" : limit}</span>
+            </div>
+            <div className="rounded-full border border-success/40 bg-success/5 px-4 py-1.5 text-xs">
+              <span className="text-muted-foreground">Free trial:</span>{" "}
+              <span className="font-semibold">{trialRemaining}/{FREE_TRIAL_COMPANY_LIMIT}</span> companies left
+            </div>
           </div>
         </div>
 

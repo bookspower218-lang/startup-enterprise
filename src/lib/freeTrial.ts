@@ -1,0 +1,1 @@
+export const FREE_TRIAL_COMPANY_LIMIT = 5;

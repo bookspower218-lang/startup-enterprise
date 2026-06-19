@@ -8,6 +8,7 @@ const OAuthComplete = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [message, setMessage] = useState("Completing sign-in…");
+  const isEmailConfirm = searchParams.get("type") === "signup" || searchParams.get("type") === "email";
 
   useEffect(() => {
     let cancelled = false;
@@ -38,7 +39,7 @@ const OAuthComplete = () => {
     const finish = async (uid: string) => {
       if (cancelled) return;
       await syncAccountType(uid);
-      toast.success("Signed in with Google");
+      toast.success(isEmailConfirm ? "Email confirmed — welcome to ValidatePK!" : "Signed in with Google");
       navigate("/dashboard", { replace: true });
     };
 
@@ -60,7 +61,9 @@ const OAuthComplete = () => {
       }
       setMessage("Sign-in failed.");
       toast.error(
-        "Google sign-in could not be completed. Use the same browser tab and try again.",
+        isEmailConfirm
+          ? "Email confirmation could not be completed. Open the link in the same browser you used to register, or sign in if you already confirmed."
+          : "Google sign-in could not be completed. Use the same browser tab and try again.",
       );
       navigate("/login", { replace: true });
     }, 8000);

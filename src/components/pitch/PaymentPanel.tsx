@@ -6,22 +6,35 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, CheckCircle2, Clock, Upload } from "lucide-react";
+import { Lock, CheckCircle2, Clock, Upload, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { PAYMENT_AMOUNTS } from "@/lib/contentFilter";
 
-type Payment = { id: string; tier: "stage_3" | "stage_4"; status: "pending" | "verified" | "rejected"; amount: number; proof_path: string | null };
+type Payment = {
+  id: string;
+  tier: "stage_3" | "stage_4";
+  status: "pending" | "verified" | "rejected";
+  amount: number;
+  proof_path: string | null;
+  gateway: string | null;
+  reference_note: string | null;
+};
 
 export default function PaymentPanel({ pitchId, tier, label, onChanged }: { pitchId: string; tier: "stage_3" | "stage_4"; label: string; onChanged: () => void; }) {
   const { user } = useAuth();
   const [payment, setPayment] = useState<Payment | null>(null);
+  const [freeTrial, setFreeTrial] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
-    const { data } = await supabase.from("pitch_payments").select("*").eq("pitch_id", pitchId).eq("tier", tier).maybeSingle();
-    setPayment((data as Payment | null) ?? null);
+    const [{ data: paymentRow }, { data: trial }] = await Promise.all([
+      supabase.from("pitch_payments").select("*").eq("pitch_id", pitchId).eq("tier", tier).maybeSingle(),
+      supabase.rpc("pitch_qualifies_for_free_trial", { _pitch_id: pitchId }),
+    ]);
+    setPayment((paymentRow as Payment | null) ?? null);
+    setFreeTrial(trial === true || paymentRow?.gateway === "free_trial");
   };
   useEffect(() => { load(); }, [pitchId, tier]);
 
@@ -50,13 +63,20 @@ export default function PaymentPanel({ pitchId, tier, label, onChanged }: { pitc
   return (
     <Card className="border-primary/40 bg-primary/5 p-4 space-y-3">
       <div className="flex items-center gap-2">
-        <Lock className="h-4 w-4 text-primary" />
-        <span className="text-sm font-semibold">{label} — PKR {PAYMENT_AMOUNTS[tier].toLocaleString()}</span>
-        {payment?.status === "verified" && <Badge className="ml-auto bg-success text-success-foreground"><CheckCircle2 className="mr-1 h-3 w-3" />Verified</Badge>}
-        {payment?.status === "pending" && <Badge variant="secondary" className="ml-auto"><Clock className="mr-1 h-3 w-3" />Pending review</Badge>}
-        {payment?.status === "rejected" && <Badge variant="destructive" className="ml-auto">Rejected</Badge>}
+        {freeTrial ? <Gift className="h-4 w-4 text-primary" /> : <Lock className="h-4 w-4 text-primary" />}
+        <span className="text-sm font-semibold">
+          {freeTrial ? "Free trial — full access unlocked" : `${label} — PKR ${PAYMENT_AMOUNTS[tier].toLocaleString()}`}
+        </span>
+        {freeTrial && <Badge className="ml-auto bg-success text-success-foreground"><CheckCircle2 className="mr-1 h-3 w-3" />No payment required</Badge>}
+        {!freeTrial && payment?.status === "verified" && <Badge className="ml-auto bg-success text-success-foreground"><CheckCircle2 className="mr-1 h-3 w-3" />Verified</Badge>}
+        {!freeTrial && payment?.status === "pending" && <Badge variant="secondary" className="ml-auto"><Clock className="mr-1 h-3 w-3" />Pending review</Badge>}
+        {!freeTrial && payment?.status === "rejected" && <Badge variant="destructive" className="ml-auto">Rejected</Badge>}
       </div>
-      {!payment || payment.status === "rejected" ? (
+      {freeTrial ? (
+        <p className="text-xs text-muted-foreground">
+          {payment?.reference_note ?? "Your first 5 company connections are included in the free trial. Contacts, files, and meetings are unlocked."}
+        </p>
+      ) : !payment || payment.status === "rejected" ? (
         <div className="space-y-3">
           <div className="rounded-md border border-border/60 bg-background/60 p-3 text-xs space-y-1">
             <div className="font-semibold text-foreground">Send PKR {PAYMENT_AMOUNTS[tier].toLocaleString()} to one of:</div>

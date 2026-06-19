@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Lock, Send, ShieldAlert, Mail, Globe, Timer } from "lucide-react";
 import { toast } from "sonner";
 import { detectForbidden, STAGE_BLOCK_MESSAGE } from "@/lib/contentFilter";
+import { FREE_TRIAL_COMPANY_LIMIT } from "@/lib/freeTrial";
 import PaymentPanel from "@/components/pitch/PaymentPanel";
 import AttachmentsPanel from "@/components/pitch/AttachmentsPanel";
 import MeetingsPanel from "@/components/pitch/MeetingsPanel";
@@ -39,6 +40,7 @@ const PitchThread = () => {
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [freeTrial, setFreeTrial] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   const load = async () => {
@@ -52,6 +54,9 @@ const PitchThread = () => {
 
       const { data: msgs } = await supabase.from("messages").select("*").eq("pitch_id", id).order("created_at");
       setMessages((msgs as Msg[]) ?? []);
+
+      const { data: trial } = await supabase.rpc("pitch_qualifies_for_free_trial", { _pitch_id: id });
+      setFreeTrial(trial === true || (p as Pitch).stage_4_unlocked);
 
       const ids = Array.from(new Set([(p as Pitch).startup_id, (p as Pitch).target_company_id].filter(Boolean) as string[]));
       if (ids.length) {
@@ -211,9 +216,15 @@ const PitchThread = () => {
           )}
         </Card>
 
-      {/* Payment gates */}
-      {interested && !stage4 && (
+      {/* Payment gates — hidden during free trial (first 5 companies) */}
+      {interested && !stage4 && !freeTrial && (
         <PaymentPanel pitchId={pitch.id} tier="stage_4" label="Unlock Stage 4 (contacts, files, meetings)" onChanged={load} />
+      )}
+      {interested && !stage4 && freeTrial && (
+        <Card className="border-success/40 bg-success/5 p-4 text-sm text-muted-foreground">
+          Free trial active — your first {FREE_TRIAL_COMPANY_LIMIT} company connections unlock full access without payment proof.
+          Refresh this page if access has not appeared yet.
+        </Card>
       )}
 
       {/* Stage 4 Contact card + tools */}

@@ -23,6 +23,7 @@ import NotificationSettings from "./pages/settings/Notifications.tsx";
 import Billing from "./pages/settings/Billing.tsx";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AuthCallbackHandler from "./components/auth/AuthCallbackHandler";
 import CookieConsent from "./components/site/CookieConsent";
 import EnvSetupBanner from "./components/EnvSetupBanner";
 
@@ -35,6 +36,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <AuthCallbackHandler />
           <EnvSetupBanner />
           <Routes>
             <Route path="/" element={<Index />} />

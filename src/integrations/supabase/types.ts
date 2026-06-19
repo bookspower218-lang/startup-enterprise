@@ -629,7 +629,10 @@ export type Database = {
         }[]
       }
       monthly_pitch_count: { Args: { _uid: string }; Returns: number }
+      pitch_qualifies_for_free_trial: { Args: { _pitch_id: string }; Returns: boolean }
       plan_pitch_limit: { Args: { _uid: string }; Returns: number }
+      startup_free_trial_remaining: { Args: { _startup_id: string }; Returns: number }
+      startup_interested_company_count: { Args: { _startup_id: string }; Returns: number }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       user_avg_rating: { Args: { _uid: string }; Returns: number }

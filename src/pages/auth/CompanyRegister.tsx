@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { signInWithGoogle } from "@/lib/oauth";
+import { getAuthRedirectTo } from "@/lib/authRedirect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,11 +41,11 @@ const CompanyRegister = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: getAuthRedirectTo(),
         data: {
           full_name: form.full_name,
           company_name: form.company_name,
@@ -58,8 +59,12 @@ const CompanyRegister = () => {
       toast.error(error.message);
       return;
     }
-    toast.success("Company account created!");
-    navigate("/dashboard");
+    if (data.session) {
+      toast.success("Company account created!");
+      navigate("/dashboard");
+      return;
+    }
+    toast.success("Check your email to confirm your account, then sign in.");
   };
 
   const handleGoogle = async () => {

@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { signInWithGoogle } from "@/lib/oauth";
+import { getAuthRedirectTo } from "@/lib/authRedirect";
 import {
   classifyAccount,
   isCorporateEmail,
@@ -86,11 +87,11 @@ const Register = () => {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: getAuthRedirectTo(),
         data: {
           full_name: form.full_name,
           account_type: accountType,
@@ -104,8 +105,12 @@ const Register = () => {
       toast.error(error.message);
       return;
     }
-    toast.success(`Welcome to ValidatePK — you're set up as ${ACCOUNT_LABELS[accountType].title}.`);
-    navigate("/dashboard");
+    if (data.session) {
+      toast.success(`Welcome to ValidatePK — you're set up as ${ACCOUNT_LABELS[accountType].title}.`);
+      navigate("/dashboard");
+      return;
+    }
+    toast.success("Check your email to confirm your account, then sign in.");
   };
 
   const handleGoogle = async () => {
